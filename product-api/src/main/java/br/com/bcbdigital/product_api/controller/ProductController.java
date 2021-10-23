@@ -9,6 +9,8 @@ import br.com.bcbdigital.product_api.service.ProductService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +38,7 @@ public class ProductController {
      *
      * @return the {@link ResponseEntity} com o status {@code 200 (OK)}} e a entidade {@link List<ProductDTO>} criada
      * */
+    @Cacheable(value = "listaTodosProdutos")
     @ApiOperation(value = "Endpoint de busca de todos os produtos cadastrados")
     @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
@@ -48,6 +51,7 @@ public class ProductController {
      * @param id passado no URL da requisição
      * @return the {@link ResponseEntity} com o status {@code 201 (OK)} e a entidade {@link DetalheRespostaDTO} criada
      * */
+    @CacheEvict(value = {"listaTodosProdutos", "listaTodosProdutosPorCategoria"}, allEntries = true)
     @ApiOperation(value = "Endpoint de deleção de produtos, dado seu ID")
     @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DetalheRespostaDTO> delete(@PathVariable Long id) {
@@ -78,6 +82,7 @@ public class ProductController {
      *
      * @return the {@link ResponseEntity} com o status {@code 200 (OK)} e a entidade {@link ProductDTO} criada
      * */
+    @Cacheable(value = "listaTodosProdutosPorCategoria")
     @ApiOperation(value = "Endpoint de busca uma lista de produtos dada sua categoria")
     @GetMapping(path ="/category/{categoryId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public	ResponseEntity<List<ProductDTO>> getProductByCategory(@PathVariable	Long categoryId) {
@@ -92,6 +97,7 @@ public class ProductController {
      *
      * @return o {@link ResponseEntity} com o status {@code 201 (CREATED)} e a entidade {@link ShopDTO} criada
      * */
+    @CacheEvict(value = {"listaTodosProdutos", "listaTodosProdutosPorCategoria"},allEntries = true)
     @ApiOperation(value = "Endpoint de criação de um novo produto")
     @PostMapping(path ="", produces = MediaType.APPLICATION_JSON_VALUE)
     public	ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO productDTO) {

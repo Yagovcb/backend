@@ -7,6 +7,8 @@ import br.com.bcbdigital.shopping_api.service.ShopService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,6 +37,7 @@ public class ShopController {
      *
      * @return the {@link ResponseEntity} com o status {@code 200 (OK)}} e a entidade {@link List<ShopDTO>} criada
      * */
+    @Cacheable(value = "listaTodasCompras")
     @ApiOperation(value = "Endpoint de busca de todos as compras cadastrados")
     @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ShopDTO>> getAllShops() {
@@ -50,6 +53,7 @@ public class ShopController {
      *
      * @return the {@link ResponseEntity} com o status {@code 200 (OK)} e a entidade {@link ShopDTO} criada
      * */
+    @Cacheable(value = "listaTodasComprasPorUsuario")
     @ApiOperation(value = "Endpoint de busca de todas as compras, dado seu ID de usuario")
     @GetMapping(path = "/shopByUser/{userIdentifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ShopDTO>> getShopsByUser(@PathVariable String userIdentifier) {
@@ -64,6 +68,7 @@ public class ShopController {
      *
      * @return the {@link ResponseEntity} com o status {@code 200 (OK)} e a entidade {@link ShopDTO} criada
      * */
+    @Cacheable(value = "listaTodasComprasOrdenandoData")
     @ApiOperation(value = "Endpoint de busca de todas as compras cadastrados ordenada pelas datas das compras")
     @GetMapping(path = "/shopByDate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ShopDTO>> getShopsByDate(@RequestBody ShopDTO shopDTO) {
@@ -90,6 +95,7 @@ public class ShopController {
      *
      * @return o {@link ResponseEntity} com o status {@code 201 (CREATED)} e a entidade {@link ShopDTO} criada
      * */
+    @CacheEvict(value = {"listaTodasComprasOrdenandoData", "listaTodasComprasPorUsuario", "listaTodasCompras", "listaTodasComprasPorFiltro"},allEntries = true)
     @ApiOperation(value = "Endpoint de criação de um novo usuario")
     @PostMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ShopDTO> createShop(@RequestHeader(name="key") String	key,
@@ -109,6 +115,7 @@ public class ShopController {
      * @return uma {@link List<ShopDTO>} todos os produtos que se encaixem no filtro e
      * um {@link ResponseEntity} com o status {@code 200 (OK)}
      * */
+    @Cacheable(value = "listaTodasComprasPorFiltro")
     @ApiOperation(value = "Endpoint de busca de todos as compras cadastrados. Dado um filtro passado via QueryParam")
     @GetMapping(path ="/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ShopDTO>> getShopsByFilter(
