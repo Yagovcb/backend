@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     @Autowired
-    private UserRepository repository;
+    private final UserRepository repository;
 
     private final ModelMapper modelMapper = new ModelMapper();
 
