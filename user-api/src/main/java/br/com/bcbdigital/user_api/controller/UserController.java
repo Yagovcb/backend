@@ -78,13 +78,13 @@ public class UserController {
     }
 
     /**
-     * {@code GET /user/cpf/{cpf}} : Rest Endpoint de busca de um {@link UserDTO} pelo id passado
+     * {@code GET /user/cpfKey/{cpf}} : Rest Endpoint de busca de um {@link UserDTO} pelo id passado
      * @param cpf passado no URL da requisição
      * @param key passado no URL da requisição
      * @return the {@link ResponseEntity} com o status {@code 200 (OK)} e a entidade {@link UserDTO} criada
      * */
     @ApiOperation(value = "Endpoint de busca de um usuario especifico, dado seu CPF e a chave principal do usuario")
-    @GetMapping(path = "/cpf/{cpf}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/cpfKey/{cpf}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> findByCpfAndKey(@RequestParam(name="key") String	key, @PathVariable String cpf) {
         log.info("UserController: Buscando usuario do CPF - " + cpf + " e a chave " + key + "...");
         return new ResponseEntity<>(userService.findByCpfAndKey(cpf, key), HttpStatus.OK);

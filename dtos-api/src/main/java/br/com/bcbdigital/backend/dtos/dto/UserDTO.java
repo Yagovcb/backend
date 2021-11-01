@@ -5,7 +5,6 @@ import lombok.Data;
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +28,7 @@ public class UserDTO {
     private String key;
 
 
-    public static List<UserDTO> usuariosList = new ArrayList<>();
+    public static final List<UserDTO> usuariosList = new ArrayList<>();
 
     @PostConstruct
     public void initiateList() {
@@ -66,7 +65,4 @@ public class UserDTO {
         usuariosList.add(userDTO3);
     }
 
-    public Collection<Object> getUsuariosList() {
-        return getUsuariosList();
-    }
 }
