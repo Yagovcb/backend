@@ -16,6 +16,8 @@
         <module>user-api</module>
         <module>dtos-api</module>
         <module>gateway</module>
+        <module>loja</module>
+        <module>eureka</module>
     </modules>
 
 
@@ -37,6 +39,10 @@
         <swagger.version>3.0.0</swagger.version>
         <modelmapper.version>2.4.4</modelmapper.version>
         <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
+        <spring-cloud-gateway-version>3.0.4</spring-cloud-gateway-version>
+        <spring-cloud.version>Greenwich.SR1</spring-cloud.version>
+        <spring-cloud-starter-eureka>1.4.7.RELEASE</spring-cloud-starter-eureka>
+        <eureka-version>3.0.4</eureka-version>
     </properties>
 
     <build>
