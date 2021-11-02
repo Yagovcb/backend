@@ -3,20 +3,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <artifactId>loja-api</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>loja-api</name>
+    <description>Microsserviço de gerencia de loja</description>
+
+
     <parent>
         <groupId>br.com.bcbdigital</groupId>
         <artifactId>backend</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-
-    <artifactId>product-api</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>product-api</name>
-    <description>Microsserviço de gerenciamento de produtos</description>
-
-    <properties>
-        <flyway.locations>filesystem:src/main/resources/db/migration</flyway.locations>
-    </properties>
 
     <dependencies>
 
@@ -33,16 +30,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
+            <version>${spring.version}</version>
             <scope>runtime</scope>
             <optional>true</optional>
-            <version>${spring.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-cache</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -55,12 +46,6 @@
             <version>${modelmapper.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.12.5</version>
@@ -71,7 +56,6 @@
             <artifactId>dtos-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-
 
         <!--Swagger-->
         <dependency>
@@ -122,11 +106,22 @@
             <version>${postgresql.version}</version>
             <scope>runtime</scope>
         </dependency>
+
     </dependencies>
 
     <build>
         <defaultGoal>spring-boot:run</defaultGoal>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source> <!-- depending on your project -->
+                    <target>${java.version}</target> <!-- depending on your project -->
+
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
@@ -145,21 +140,12 @@
                     <user>postgres</user>
                     <password>admin</password>
                     <baselineOnMigrate>true</baselineOnMigrate>
-                    <schemas>products</schemas>
+                    <schemas>users</schemas>
                     <locations>
                         <location>
                             filesystem:src/main/resources/db/migration
                         </location>
                     </locations>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
                 </configuration>
             </plugin>
         </plugins>
