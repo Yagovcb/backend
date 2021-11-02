@@ -9,18 +9,21 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- *  Classe Repository da entidade {@link User}
- *
- *  Criado por Yago Castelo Branco
+ * Classe Repository da entidade {@link User}
+ * <p>
+ * Criado por Yago Castelo Branco
  *
  * @since 21/10/2021
- * */
+ */
 @Repository
-public interface UserRepository extends JpaRepository<User,	Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    User	findByCpf(String	cpf);
-    List<User> queryByNomeLike(String	name);
+    User findByCpf(String cpf);
+
+    List<User> queryByNomeLike(String name);
+
     Page<User> findAll(Pageable pageable);
+
     User findByCpfAndKey(String cpf, String key);
 
 }

@@ -98,6 +98,12 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2-version}</version>
+            <scope>compile</scope>
+        </dependency>
 
         <!--        configurações sobre database-->
         <dependency>
@@ -111,7 +117,6 @@
             <version>${postgresql.version}</version>
             <scope>runtime</scope>
         </dependency>
-
     </dependencies>
 
     <build>

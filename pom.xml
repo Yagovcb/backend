@@ -39,6 +39,7 @@
         <swagger.version>3.0.0</swagger.version>
         <modelmapper.version>2.4.4</modelmapper.version>
         <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
+        <h2-version>1.4.200</h2-version>
         <spring-cloud-gateway-version>3.0.4</spring-cloud-gateway-version>
         <spring-cloud.version>2020.0.3</spring-cloud.version>
         <spring-cloud-starter-eureka>1.4.7.RELEASE</spring-cloud-starter-eureka>

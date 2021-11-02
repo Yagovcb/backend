@@ -1,1 +1,1 @@
-alter table	users.user add column key varchar(100);
+alter table	"user" add column if not exists key varchar(100);
