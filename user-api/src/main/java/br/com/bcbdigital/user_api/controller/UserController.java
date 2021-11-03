@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -30,15 +31,15 @@ public class UserController {
     private final UserService userService;
 
     /**
-     * {@code GET /products} : Rest Endpoint de busca de uma {@link List<UserDTO>} já criada
+     * {@code GET /user } : Rest Endpoint de busca de uma {@link List<UserDTO>} já criada
      * @param pageable paginação informada
      * @return the {@link ResponseEntity} com o status {@code 200 (OK)}} e a entidade {@link List<UserDTO>} criada
      * */
     @ApiOperation(value = "Endpoint de busca de todos os Users cadastrados")
     @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<UserDTO>> getUsers(@ApiParam Pageable pageable) {
+    public ResponseEntity<List<UserDTO>> getListUsers(@ApiParam Pageable pageable) {
         log.info("UserController: Retornando todos os Usuarios Cadastrados");
-        return new ResponseEntity<>(userService.getAll(pageable), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getAllUsers(pageable), HttpStatus.OK);
     }
 
     /**
@@ -54,10 +55,11 @@ public class UserController {
     }
 
     /**
-     * {@code POST /products} : Rest Endpoint de Criação do {@link UserDTO}
+     * {@code POST /user } : Rest Endpoint de Criação do {@link UserDTO}
      * @param userDTO passado no corpo da requisição
      * @return the {@link ResponseEntity} com o status {@code 201 (CREATED)} e a entidade {@link UserDTO} criada
      * */
+    @Transactional
     @ApiOperation(value = "Endpoint de criação de um novo usuario")
     @PostMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
@@ -95,6 +97,7 @@ public class UserController {
      * @param id passado no URL da requisição
      * @return the {@link ResponseEntity} com o status {@code 201 (OK)} e a entidade {@link DetalheRespostaDTO} criada
      * */
+    @Transactional
     @ApiOperation(value = "Endpoint de deleção de usuario, dado seu ID")
     @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DetalheRespostaDTO> delete(@PathVariable Long id) {

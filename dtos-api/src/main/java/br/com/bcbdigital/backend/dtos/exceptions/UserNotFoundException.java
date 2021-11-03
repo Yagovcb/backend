@@ -11,7 +11,7 @@ public class UserNotFoundException extends RuntimeException{
     /**
      * Método que chama o construtor padrão de RuntimeException
      * */
-    public UserNotFoundException() {
-        super();
+    public UserNotFoundException(String message) {
+        super(message);
     }
 }

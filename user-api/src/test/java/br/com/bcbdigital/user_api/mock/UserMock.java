@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 public class UserMock {
 
-    public static User getUsuarioMock() {
+    public static User getUsuarioCompletoMock() {
 
         User user = new User();
         user.setId(1);
@@ -32,7 +32,6 @@ public class UserMock {
         user.setEndereco("Travessa 14 de abril");
         user.setTelefone("999999999999");
         user.setDataCadastro(LocalDate.now());
-        user.setKey("kjasbdcjsabdasjsbnd");
 
         return user;
     }

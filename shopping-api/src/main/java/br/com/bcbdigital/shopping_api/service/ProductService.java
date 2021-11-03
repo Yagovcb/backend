@@ -3,6 +3,9 @@ package br.com.bcbdigital.shopping_api.service;
 import br.com.bcbdigital.backend.dtos.dto.ProductDTO;
 import br.com.bcbdigital.backend.dtos.dto.UserDTO;
 import br.com.bcbdigital.backend.dtos.exceptions.ProductNotFoundException;
+import com.netflix.discovery.converters.Auto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -18,6 +21,9 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class ProductService {
 
+    @Autowired
+    private RestTemplate client;
+
     /**
      * Método responsavel fazer a consulta para o microsserviço de {@link br.com.bcbdigital.product_api},
      * e retorna o {@link ProductDTO} pesquisado
@@ -31,10 +37,7 @@ public class ProductService {
     public ProductDTO getProductByIdentifier(String productIdentifier) {
         try {
 
-            RestTemplate restTemplate = new RestTemplate();
-            String url = "http://localhost:8081/product/" + productIdentifier;
-
-            ResponseEntity<ProductDTO> response = restTemplate.getForEntity(url, ProductDTO.class);
+            ResponseEntity<ProductDTO> response = client.exchange("http://produto/product/" + productIdentifier, HttpMethod.GET, null, ProductDTO.class);
 
             return response.getBody();
         } catch (HttpClientErrorException.NotFound	e) {

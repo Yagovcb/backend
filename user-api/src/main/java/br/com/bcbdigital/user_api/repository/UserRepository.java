@@ -26,4 +26,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByCpfAndKey(String cpf, String key);
 
+    boolean existsUserByCpfAndNome(String cpf, String name);
+
 }

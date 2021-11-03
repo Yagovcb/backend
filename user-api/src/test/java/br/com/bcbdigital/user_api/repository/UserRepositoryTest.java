@@ -1,42 +1,44 @@
 package br.com.bcbdigital.user_api.repository;
 
+import br.com.bcbdigital.user_api.UserApiApplication;
 import br.com.bcbdigital.user_api.mock.UserMock;
 import br.com.bcbdigital.user_api.model.User;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@RunWith(SpringRunner.class)
+
 @DataJpaTest
 @ActiveProfiles(value = "test")
-public class UserRepositoryTest {
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
 
-
-    @Before
-    public void setup(){
-        userRepository.save(UserMock.getUsuarioMock());
+    @BeforeEach
+    void setup(){
+        userRepository.save(UserMock.getUsuarioCompletoMock());
     }
 
-
     @Test
-    public void findByCpfTest() {
+    void findByCpfTest() {
         var cpf = "887.177.552-04";
 
         User usuarioConsulta = userRepository.findByCpf(cpf);
@@ -45,9 +47,8 @@ public class UserRepositoryTest {
         assertEquals(usuarioConsulta.getCpf(), cpf);
     }
 
-
     @Test
-    public void findByNomeTest() {
+    void findByNomeTest() {
         var nome = "Yago";
 
         List<User> usuarioConsulta = userRepository.queryByNomeLike(nome);
@@ -58,7 +59,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void findAllTest() {
+    void findAllTest() {
         Pageable pageable = PageRequest.of(0, 5, Sort.by(
                 Sort.Order.asc("nome"),
                 Sort.Order.desc("id")
@@ -71,7 +72,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void findByCpfAndKeyTest() {
+    void findByCpfAndKeyTest() {
         var key = "kjasbdcjsabdasjsbnd";
         var cpf = "887.177.552-04";
 
