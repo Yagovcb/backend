@@ -8,16 +8,13 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>backend</name>
     <packaging>pom</packaging>
-    <description>Backend das aplicações da BCB Digital</description>
+    <description>Backend das aplicações da BCB Digital que concentram as APIs</description>
 
     <modules>
         <module>product-api</module>
         <module>shopping-api</module>
         <module>user-api</module>
         <module>dtos-api</module>
-        <module>gateway</module>
-        <module>loja</module>
-        <module>eureka</module>
     </modules>
 
 
