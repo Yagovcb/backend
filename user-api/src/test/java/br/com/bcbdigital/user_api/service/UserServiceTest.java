@@ -1,16 +1,12 @@
 package br.com.bcbdigital.user_api.service;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import br.com.bcbdigital.backend.dtos.dto.DetalheRespostaDTO;
 import br.com.bcbdigital.backend.dtos.dto.UserDTO;
 import br.com.bcbdigital.backend.dtos.exceptions.MethodNotAllowedException;
@@ -18,11 +14,9 @@ import br.com.bcbdigital.backend.dtos.exceptions.UserNotFoundException;
 import br.com.bcbdigital.user_api.mock.UserMock;
 import br.com.bcbdigital.user_api.model.User;
 import br.com.bcbdigital.user_api.repository.UserRepository;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
-
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +28,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {UserService.class})

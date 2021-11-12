@@ -3,7 +3,6 @@ package br.com.bcbdigital.product_api.service;
 import br.com.bcbdigital.backend.dtos.dto.*;
 import br.com.bcbdigital.backend.dtos.exceptions.CategoryNotFoundException;
 import br.com.bcbdigital.backend.dtos.exceptions.ProductNotFoundException;
-import br.com.bcbdigital.product_api.controller.ProductController;
 import br.com.bcbdigital.product_api.model.Category;
 import br.com.bcbdigital.product_api.model.Product;
 import br.com.bcbdigital.product_api.repository.CategoryRepository;
@@ -20,7 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- *  {@link Service} controller para gerenciar as  ações do controller {@link ProductController}.
+ *  {@link Service} controller para gerenciar as  ações do controller {@link br.com.bcbdigital.product_api.controller.ProductController}.
  *
  *  Criado por Yago Castelo Branco
  *
@@ -37,7 +36,7 @@ public class ProductService {
     private CategoryRepository categoryRepository;
 
     @Autowired
-    private ProductRepository repository;
+    private ProductRepository productRepository;
 
     /**
      * Método responsavel por retornar todas as compras
@@ -45,7 +44,7 @@ public class ProductService {
      * @return um {@link List<ProductDTO>} com todos os registros da entidade {@link ProductDTO} criados
      * */
     public	List<ProductDTO> getAll() {
-        List<Product> products = repository.findAll();
+        List<Product> products = productRepository.findAll();
         return	products.stream().map(product -> modelMapper.map(product, ProductDTO.class))
                 .collect(Collectors.toList());
     }
@@ -58,7 +57,7 @@ public class ProductService {
      * @return uma {@link List<ProductDTO>} com base na {@link CategoryDTO}
      * */
     public	List<ProductDTO> getProductByCategoryId(Long categoryId) {
-        List<Product> products = repository.getProductByCategory(categoryId);
+        List<Product> products = productRepository.getProductByCategory(categoryId);
         return	products.stream().map(product -> modelMapper.map(product, ProductDTO.class))
                 .collect(Collectors.toList());
     }
@@ -73,7 +72,7 @@ public class ProductService {
      * @return um {@link ProductDTO} especifico
      * */
     public	ProductDTO findByProductIdentifier(String productIdentifier) {
-        Product	product	= repository.findByProductIdentifier(productIdentifier);
+        Product	product	= productRepository.findByProductIdentifier(productIdentifier);
         if (Objects.nonNull(product)){
             return modelMapper.map(product, ProductDTO.class);
         } else {
@@ -95,7 +94,7 @@ public class ProductService {
             throw new CategoryNotFoundException();
         }
 
-        Product	product	= repository.save(modelMapper.map(productDTO, Product.class));
+        Product	product	= productRepository.save(modelMapper.map(productDTO, Product.class));
         return modelMapper.map(product, ProductDTO.class);
     }
 
@@ -107,11 +106,11 @@ public class ProductService {
      * @return o {@link DetalheRespostaDTO} informando que o produto foi deletado
      * */
     public DetalheRespostaDTO delete(long productId) {
-        Optional<Product> product = repository.findById(productId);
+        Optional<Product> product = productRepository.findById(productId);
 
         if (product.isPresent()) {
-            repository.delete(product.get());
-            return new DetalheRespostaDTO("Usuario deletado com sucesso", 200, LocalDate.now());
+            productRepository.delete(product.get());
+            return new DetalheRespostaDTO("Produto deletado com sucesso", 200, LocalDate.now());
         } else {
             throw new ProductNotFoundException();
         }
