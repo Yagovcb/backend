@@ -12,7 +12,7 @@ public class ProductNotFoundException extends RuntimeException {
     /**
      * Método que chama o construtor padrão de RuntimeException
      * */
-    public ProductNotFoundException() {
-        super();
+    public ProductNotFoundException(String message) {
+        super(message);
     }
 }

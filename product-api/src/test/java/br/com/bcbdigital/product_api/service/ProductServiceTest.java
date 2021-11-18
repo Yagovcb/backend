@@ -13,7 +13,6 @@ import br.com.bcbdigital.backend.dtos.dto.CategoryDTO;
 import br.com.bcbdigital.backend.dtos.dto.DetalheRespostaDTO;
 import br.com.bcbdigital.backend.dtos.dto.ProductDTO;
 import br.com.bcbdigital.backend.dtos.exceptions.CategoryNotFoundException;
-import br.com.bcbdigital.backend.dtos.exceptions.MethodNotAllowedException;
 import br.com.bcbdigital.backend.dtos.exceptions.ProductNotFoundException;
 import br.com.bcbdigital.product_api.mock.CategoryMock;
 import br.com.bcbdigital.product_api.mock.ProductMock;
@@ -34,6 +33,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -61,9 +61,10 @@ class ProductServiceTest {
     @Order(1)
     @DisplayName("Teste de serviço que tenta recuperar todos os produtos")
     void testGetAll() {
-        when(this.productRepository.findAll()).thenReturn(new ArrayList<>());
-        assertTrue(this.productService.getAll().isEmpty());
-        verify(this.productRepository).findAll();
+        when(this.productRepository.findAll((org.springframework.data.domain.Pageable) any()))
+                .thenReturn(new PageImpl<>(new ArrayList<>()));
+        assertTrue(this.productService.getListProducts(null).isEmpty());
+        verify(this.productRepository).findAll((org.springframework.data.domain.Pageable) any());
     }
 
     @Test
@@ -76,7 +77,6 @@ class ProductServiceTest {
         List<ProductDTO> actualProductByCategoryId = this.productService.getProductByCategoryId(product.getCategory().getId());
         assertTrue(actualProductByCategoryId.isEmpty());
         verify(this.productRepository).getProductByCategory(anyLong());
-        assertEquals(actualProductByCategoryId, this.productService.getAll());
     }
 
     @Test
@@ -101,7 +101,6 @@ class ProductServiceTest {
 
         verify(this.productRepository).save(any());
         verify(this.categoryRepository).existsById(any());
-        assertTrue(this.productService.getAll().isEmpty());
     }
 
     @Test
@@ -133,7 +132,6 @@ class ProductServiceTest {
         assertEquals(category.getNome(), category1.getNome());
 
         verify(this.productRepository).findByProductIdentifier(any());
-        assertTrue(this.productService.getAll().isEmpty());
     }
 
     @Test
@@ -161,11 +159,10 @@ class ProductServiceTest {
         DetalheRespostaDTO actualDeleteResult = this.productService.delete(product.getId());
 
         assertEquals(200, actualDeleteResult.getStatus());
-        assertEquals("Usuario deletado com sucesso", actualDeleteResult.getMensagem());
+        assertEquals("Produto deletado com sucesso", actualDeleteResult.getMensagem());
 
         verify(this.productRepository).delete(any());
         verify(this.productRepository).findById(any());
-        assertTrue(this.productService.getAll().isEmpty());
     }
 
     @Test

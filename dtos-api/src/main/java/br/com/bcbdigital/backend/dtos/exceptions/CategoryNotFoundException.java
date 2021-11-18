@@ -11,7 +11,7 @@ public class CategoryNotFoundException extends RuntimeException {
     /**
      * Método que chama o construtor padrão de RuntimeException
      * */
-    public CategoryNotFoundException() {
-        super();
+    public CategoryNotFoundException(String message) {
+        super(message);
     }
 }

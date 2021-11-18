@@ -14,6 +14,7 @@ public class CategoryMock {
 
     public static CategoryDTO getCategoryDTOMock(){
         CategoryDTO category = new CategoryDTO();
+        category.setId(1L);
         category.setNome("Categoria de teste");
         return category;
     }

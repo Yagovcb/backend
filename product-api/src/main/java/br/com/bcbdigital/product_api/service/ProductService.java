@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
@@ -43,8 +44,8 @@ public class ProductService {
      *
      * @return um {@link List<ProductDTO>} com todos os registros da entidade {@link ProductDTO} criados
      * */
-    public	List<ProductDTO> getAll() {
-        List<Product> products = productRepository.findAll();
+    public	List<ProductDTO> getListProducts(Pageable pageable) {
+        List<Product> products = productRepository.findAll(pageable).getContent();
         return	products.stream().map(product -> modelMapper.map(product, ProductDTO.class))
                 .collect(Collectors.toList());
     }
@@ -76,7 +77,7 @@ public class ProductService {
         if (Objects.nonNull(product)){
             return modelMapper.map(product, ProductDTO.class);
         } else {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException("Produto não encontrado");
         }
     }
 
@@ -91,7 +92,7 @@ public class ProductService {
         boolean existsCategory = categoryRepository.existsById(productDTO.getCategory().getId());
 
         if (!existsCategory){
-            throw new CategoryNotFoundException();
+            throw new CategoryNotFoundException("Categoria não encontrada");
         }
 
         Product	product	= productRepository.save(modelMapper.map(productDTO, Product.class));
@@ -112,7 +113,7 @@ public class ProductService {
             productRepository.delete(product.get());
             return new DetalheRespostaDTO("Produto deletado com sucesso", 200, LocalDate.now());
         } else {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException("Produto não encontrado");
         }
     }
 }

@@ -3,7 +3,6 @@ package br.com.bcbdigital.shopping_api.service;
 import br.com.bcbdigital.backend.dtos.dto.ProductDTO;
 import br.com.bcbdigital.backend.dtos.dto.UserDTO;
 import br.com.bcbdigital.backend.dtos.exceptions.ProductNotFoundException;
-import com.netflix.discovery.converters.Auto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +40,7 @@ public class ProductService {
 
             return response.getBody();
         } catch (HttpClientErrorException.NotFound	e) {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException("Produto não encontrado");
         }
     }
 }

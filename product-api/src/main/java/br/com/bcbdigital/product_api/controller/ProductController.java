@@ -7,10 +7,12 @@ import br.com.bcbdigital.product_api.model.Category;
 import br.com.bcbdigital.product_api.model.Product;
 import br.com.bcbdigital.product_api.service.ProductService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,9 +43,9 @@ public class ProductController {
     @Cacheable(value = "listaTodosProdutos")
     @ApiOperation(value = "Endpoint de busca de todos os produtos cadastrados")
     @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
+    public ResponseEntity<List<ProductDTO>> getListProducts(@ApiParam Pageable pageable) {
         log.info("ProductController: Retornando todas os produtos cadastrados");
-        return new ResponseEntity<>(productService.getAll(), HttpStatus.OK);
+        return new ResponseEntity<>(productService.getListProducts(pageable), HttpStatus.OK);
     }
 
     /**
@@ -60,7 +62,7 @@ public class ProductController {
     }
 
     /**
-     * {@code GET /product/{userIdentifier}} : Rest Endpoint de busca de uma {@link ProductDTO}
+     * {@code GET /product/{productIdentifier}} : Rest Endpoint de busca de uma {@link ProductDTO}
      * pelo id do {@link Product} passado
      *
      * @param productIdentifier passado no URL da requisição

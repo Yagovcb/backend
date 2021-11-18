@@ -20,6 +20,7 @@ public class ProductMock {
     public static ProductDTO getProductDTOMock(){
         ProductDTO product = new ProductDTO();
         product.setNome("Produto de teste");
+        product.setDescricao("Descrição de teste");
         product.setProductIdentifier("identificador de produto de teste");
         product.setCategory(CategoryMock.getCategoryDTOMock());
         product.setPreco(11.22f);
