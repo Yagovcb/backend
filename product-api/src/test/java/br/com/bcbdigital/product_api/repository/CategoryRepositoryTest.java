@@ -3,6 +3,7 @@ package br.com.bcbdigital.product_api.repository;
 import br.com.bcbdigital.product_api.mock.CategoryMock;
 import br.com.bcbdigital.product_api.model.Category;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @ActiveProfiles(value = "test")
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@DisplayName("Teste da classe de repository CategoryRepository")
 class CategoryRepositoryTest {
 
     @Autowired
@@ -26,6 +28,7 @@ class CategoryRepositoryTest {
     }
 
     @Test
+    @DisplayName("Teste do metodo findByNome do repository")
     void findByNomeTest() {
         long id = 1;
 

@@ -1,9 +1,13 @@
 package br.com.bcbdigital.shopping_api.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +20,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "shop")
+@RequiredArgsConstructor
 public class Shop {
 
     @Id
@@ -28,4 +33,5 @@ public class Shop {
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "item", joinColumns = @JoinColumn(name = "shop_id"))
     private List<Item> items;
+
 }

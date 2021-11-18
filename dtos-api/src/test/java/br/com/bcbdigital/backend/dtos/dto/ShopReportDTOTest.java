@@ -18,7 +18,7 @@ class ShopReportDTOTest {
 
         ShopReportDTO shopReportDTO1 = new ShopReportDTO();
         shopReportDTO1.setTotal(10.0);
-        shopReportDTO1.setMean(10.0);
+        shopReportDTO1.setMedia(10.0);
         shopReportDTO1.setCount(3);
         assertTrue(shopReportDTO.canEqual(shopReportDTO1));
     }
@@ -27,10 +27,10 @@ class ShopReportDTOTest {
     void testConstructor() {
         ShopReportDTO actualShopReportDTO = new ShopReportDTO();
         actualShopReportDTO.setCount(3);
-        actualShopReportDTO.setMean(10.0);
+        actualShopReportDTO.setMedia(10.0);
         actualShopReportDTO.setTotal(10.0);
         assertEquals(3, actualShopReportDTO.getCount().intValue());
-        assertEquals(10.0, actualShopReportDTO.getMean().doubleValue());
+        assertEquals(10.0, actualShopReportDTO.getMedia().doubleValue());
         assertEquals(10.0, actualShopReportDTO.getTotal().doubleValue());
         assertEquals("ShopReportDTO(count=3, total=10.0, mean=10.0)", actualShopReportDTO.toString());
     }
@@ -39,7 +39,7 @@ class ShopReportDTOTest {
     void testEquals() {
         ShopReportDTO shopReportDTO = new ShopReportDTO();
         shopReportDTO.setTotal(10.0);
-        shopReportDTO.setMean(10.0);
+        shopReportDTO.setMedia(10.0);
         shopReportDTO.setCount(3);
         assertFalse(shopReportDTO.equals(null));
     }
@@ -48,7 +48,7 @@ class ShopReportDTOTest {
     void testEquals2() {
         ShopReportDTO shopReportDTO = new ShopReportDTO();
         shopReportDTO.setTotal(10.0);
-        shopReportDTO.setMean(10.0);
+        shopReportDTO.setMedia(10.0);
         shopReportDTO.setCount(3);
         assertFalse(shopReportDTO.equals("Different type to ShopReportDTO"));
     }
@@ -57,7 +57,7 @@ class ShopReportDTOTest {
     void testEquals3() {
         ShopReportDTO shopReportDTO = new ShopReportDTO();
         shopReportDTO.setTotal(10.0);
-        shopReportDTO.setMean(10.0);
+        shopReportDTO.setMedia(10.0);
         shopReportDTO.setCount(3);
         assertTrue(shopReportDTO.equals(shopReportDTO));
         int expectedHashCodeResult = shopReportDTO.hashCode();
@@ -68,12 +68,12 @@ class ShopReportDTOTest {
     void testEquals4() {
         ShopReportDTO shopReportDTO = new ShopReportDTO();
         shopReportDTO.setTotal(10.0);
-        shopReportDTO.setMean(10.0);
+        shopReportDTO.setMedia(10.0);
         shopReportDTO.setCount(3);
 
         ShopReportDTO shopReportDTO1 = new ShopReportDTO();
         shopReportDTO1.setTotal(10.0);
-        shopReportDTO1.setMean(10.0);
+        shopReportDTO1.setMedia(10.0);
         shopReportDTO1.setCount(3);
         assertTrue(shopReportDTO.equals(shopReportDTO1));
         int expectedHashCodeResult = shopReportDTO.hashCode();
@@ -84,12 +84,12 @@ class ShopReportDTOTest {
     void testEquals5() {
         ShopReportDTO shopReportDTO = new ShopReportDTO();
         shopReportDTO.setTotal(null);
-        shopReportDTO.setMean(10.0);
+        shopReportDTO.setMedia(10.0);
         shopReportDTO.setCount(3);
 
         ShopReportDTO shopReportDTO1 = new ShopReportDTO();
         shopReportDTO1.setTotal(10.0);
-        shopReportDTO1.setMean(10.0);
+        shopReportDTO1.setMedia(10.0);
         shopReportDTO1.setCount(3);
         assertFalse(shopReportDTO.equals(shopReportDTO1));
     }
@@ -98,12 +98,12 @@ class ShopReportDTOTest {
     void testEquals6() {
         ShopReportDTO shopReportDTO = new ShopReportDTO();
         shopReportDTO.setTotal(0.5);
-        shopReportDTO.setMean(10.0);
+        shopReportDTO.setMedia(10.0);
         shopReportDTO.setCount(3);
 
         ShopReportDTO shopReportDTO1 = new ShopReportDTO();
         shopReportDTO1.setTotal(10.0);
-        shopReportDTO1.setMean(10.0);
+        shopReportDTO1.setMedia(10.0);
         shopReportDTO1.setCount(3);
         assertFalse(shopReportDTO.equals(shopReportDTO1));
     }
@@ -112,12 +112,12 @@ class ShopReportDTOTest {
     void testEquals7() {
         ShopReportDTO shopReportDTO = new ShopReportDTO();
         shopReportDTO.setTotal(10.0);
-        shopReportDTO.setMean(null);
+        shopReportDTO.setMedia(null);
         shopReportDTO.setCount(3);
 
         ShopReportDTO shopReportDTO1 = new ShopReportDTO();
         shopReportDTO1.setTotal(10.0);
-        shopReportDTO1.setMean(10.0);
+        shopReportDTO1.setMedia(10.0);
         shopReportDTO1.setCount(3);
         assertFalse(shopReportDTO.equals(shopReportDTO1));
     }
@@ -126,12 +126,12 @@ class ShopReportDTOTest {
     void testEquals8() {
         ShopReportDTO shopReportDTO = new ShopReportDTO();
         shopReportDTO.setTotal(10.0);
-        shopReportDTO.setMean(0.5);
+        shopReportDTO.setMedia(0.5);
         shopReportDTO.setCount(3);
 
         ShopReportDTO shopReportDTO1 = new ShopReportDTO();
         shopReportDTO1.setTotal(10.0);
-        shopReportDTO1.setMean(10.0);
+        shopReportDTO1.setMedia(10.0);
         shopReportDTO1.setCount(3);
         assertFalse(shopReportDTO.equals(shopReportDTO1));
     }
@@ -140,12 +140,12 @@ class ShopReportDTOTest {
     void testEquals9() {
         ShopReportDTO shopReportDTO = new ShopReportDTO();
         shopReportDTO.setTotal(10.0);
-        shopReportDTO.setMean(10.0);
+        shopReportDTO.setMedia(10.0);
         shopReportDTO.setCount(0);
 
         ShopReportDTO shopReportDTO1 = new ShopReportDTO();
         shopReportDTO1.setTotal(10.0);
-        shopReportDTO1.setMean(10.0);
+        shopReportDTO1.setMedia(10.0);
         shopReportDTO1.setCount(3);
         assertFalse(shopReportDTO.equals(shopReportDTO1));
     }
@@ -154,12 +154,12 @@ class ShopReportDTOTest {
     void testEquals10() {
         ShopReportDTO shopReportDTO = new ShopReportDTO();
         shopReportDTO.setTotal(10.0);
-        shopReportDTO.setMean(10.0);
+        shopReportDTO.setMedia(10.0);
         shopReportDTO.setCount(null);
 
         ShopReportDTO shopReportDTO1 = new ShopReportDTO();
         shopReportDTO1.setTotal(10.0);
-        shopReportDTO1.setMean(10.0);
+        shopReportDTO1.setMedia(10.0);
         shopReportDTO1.setCount(3);
         assertFalse(shopReportDTO.equals(shopReportDTO1));
     }
@@ -168,12 +168,12 @@ class ShopReportDTOTest {
     void testEquals11() {
         ShopReportDTO shopReportDTO = new ShopReportDTO();
         shopReportDTO.setTotal(null);
-        shopReportDTO.setMean(10.0);
+        shopReportDTO.setMedia(10.0);
         shopReportDTO.setCount(3);
 
         ShopReportDTO shopReportDTO1 = new ShopReportDTO();
         shopReportDTO1.setTotal(null);
-        shopReportDTO1.setMean(10.0);
+        shopReportDTO1.setMedia(10.0);
         shopReportDTO1.setCount(3);
         assertTrue(shopReportDTO.equals(shopReportDTO1));
         int expectedHashCodeResult = shopReportDTO.hashCode();
@@ -184,12 +184,12 @@ class ShopReportDTOTest {
     void testEquals12() {
         ShopReportDTO shopReportDTO = new ShopReportDTO();
         shopReportDTO.setTotal(10.0);
-        shopReportDTO.setMean(null);
+        shopReportDTO.setMedia(null);
         shopReportDTO.setCount(3);
 
         ShopReportDTO shopReportDTO1 = new ShopReportDTO();
         shopReportDTO1.setTotal(10.0);
-        shopReportDTO1.setMean(null);
+        shopReportDTO1.setMedia(null);
         shopReportDTO1.setCount(3);
         assertTrue(shopReportDTO.equals(shopReportDTO1));
         int expectedHashCodeResult = shopReportDTO.hashCode();
@@ -200,12 +200,12 @@ class ShopReportDTOTest {
     void testEquals13() {
         ShopReportDTO shopReportDTO = new ShopReportDTO();
         shopReportDTO.setTotal(10.0);
-        shopReportDTO.setMean(10.0);
+        shopReportDTO.setMedia(10.0);
         shopReportDTO.setCount(null);
 
         ShopReportDTO shopReportDTO1 = new ShopReportDTO();
         shopReportDTO1.setTotal(10.0);
-        shopReportDTO1.setMean(10.0);
+        shopReportDTO1.setMedia(10.0);
         shopReportDTO1.setCount(null);
         assertTrue(shopReportDTO.equals(shopReportDTO1));
         int expectedHashCodeResult = shopReportDTO.hashCode();

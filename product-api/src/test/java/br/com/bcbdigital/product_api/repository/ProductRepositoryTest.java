@@ -4,7 +4,9 @@ import br.com.bcbdigital.product_api.mock.CategoryMock;
 import br.com.bcbdigital.product_api.mock.ProductMock;
 import br.com.bcbdigital.product_api.model.Product;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -16,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @ActiveProfiles(value = "test")
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@DisplayName("Teste da classe de repository ProductRepository")
 class ProductRepositoryTest {
 
     @Autowired
@@ -27,6 +30,7 @@ class ProductRepositoryTest {
     }
 
     @Test
+    @DisplayName("Teste do metodo getProductByCategory do repository")
     void getProductByCategoryTest(){
         var categoriaId = CategoryMock.getCategoryMock().getId();
 
@@ -37,6 +41,7 @@ class ProductRepositoryTest {
     }
 
     @Test
+    @DisplayName("Teste do metodo findByProductIdentifier do repository")
     void findByProductIdentifierTest(){
         var productIdentifier = ProductMock.getProductMock().getProductIdentifier();
 

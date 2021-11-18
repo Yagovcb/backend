@@ -3,6 +3,7 @@ package br.com.bcbdigital.user_api.repository;
 import br.com.bcbdigital.user_api.mock.UserMock;
 import br.com.bcbdigital.user_api.model.User;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -21,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @DataJpaTest
 @ActiveProfiles(value = "test")
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@DisplayName("Teste da classe de repository UserRepository")
 class UserRepositoryTest {
 
     @Autowired
@@ -32,6 +34,7 @@ class UserRepositoryTest {
     }
 
     @Test
+    @DisplayName("Teste do metodo findByCpf do repository")
     void findByCpfTest() {
         var cpf = "887.177.552-04";
 
@@ -42,6 +45,7 @@ class UserRepositoryTest {
     }
 
     @Test
+    @DisplayName("Teste do metodo findByNome do repository")
     void findByNomeTest() {
         var nome = "Yago";
 
@@ -53,6 +57,7 @@ class UserRepositoryTest {
     }
 
     @Test
+    @DisplayName("Teste do metodo findAll do repository")
     void findAllTest() {
         Pageable pageable = PageRequest.of(0, 5, Sort.by(
                 Sort.Order.asc("nome"),
@@ -66,6 +71,7 @@ class UserRepositoryTest {
     }
 
     @Test
+    @DisplayName("Teste do metodo findByCpfAndKey do repository")
     void findByCpfAndKeyTest() {
         var key = "kjasbdcjsabdasjsbnd";
         var cpf = "887.177.552-04";

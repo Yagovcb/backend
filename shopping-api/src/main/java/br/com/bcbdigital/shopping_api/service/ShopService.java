@@ -1,7 +1,7 @@
 package br.com.bcbdigital.shopping_api.service;
 
 import br.com.bcbdigital.backend.dtos.dto.*;
-import br.com.bcbdigital.shopping_api.repository.ReportRepository;
+import br.com.bcbdigital.shopping_api.model.ShopReport;
 import br.com.bcbdigital.shopping_api.repository.ShopRepository;
 import br.com.bcbdigital.shopping_api.model.Shop;
 import lombok.RequiredArgsConstructor;
@@ -28,16 +28,13 @@ import java.util.stream.Collectors;
 public class ShopService {
 
     @Autowired
-    private ShopRepository repository;
+    private final ShopRepository repository;
 
     @Autowired
-    private ReportRepository reportRepository;
+    private final ProductService productService;
 
     @Autowired
-    private ProductService productService;
-
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     private final ModelMapper modelMapper = new ModelMapper();
 
@@ -119,7 +116,7 @@ public class ShopService {
      * @return uma {@link List<ShopDTO>} todos os produtos que se encaixem no filtro
      * */
     public List<ShopDTO> getShopsByFilter(LocalDate dataInicio, LocalDate dataFim, Float valorMinimo) {
-        List<Shop> shops = reportRepository.getShopByFilters(dataInicio, dataFim, valorMinimo);
+        List<Shop> shops = repository.getShopByFilters(dataInicio, dataFim, valorMinimo);
         return shops.stream().map(shop -> modelMapper.map(shop, ShopDTO.class))
                 .collect(Collectors.toList());
     }
@@ -133,7 +130,8 @@ public class ShopService {
      * @return uma {@link ShopReportDTO} todos os produtos que se encaixem no relatorio
      * */
     public ShopReportDTO getReportByDate(LocalDate dataInicio, LocalDate dataFim) {
-        return reportRepository.getReportByDate(dataInicio, dataFim);
+        ShopReport reportByDate = repository.getReportByDate(dataInicio, dataFim);
+        return modelMapper.map(reportByDate, ShopReportDTO.class);
     }
 
     private boolean validateProducts(List<ItemDTO> items) {
