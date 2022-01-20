@@ -101,7 +101,7 @@ public class ShopController {
     public ResponseEntity<ShopDTO> createShop(@RequestHeader(name="key") String	key,
                                               @Valid @RequestBody ShopDTO shopDTO) {
         log.info( "ShopController: Criando nova compra" + shopDTO );
-        return new ResponseEntity<>(shopService.save(shopDTO, key), HttpStatus.CREATED);
+        return new ResponseEntity<>(shopService.createShop(shopDTO, key), HttpStatus.CREATED);
     }
 
     /**

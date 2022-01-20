@@ -26,6 +26,7 @@ public class Product {
     private Float preco;
     private String descricao;
     private String productIdentifier;
+    private int qtd;
 
     @ManyToOne
     @JoinColumn(name = "category_id")

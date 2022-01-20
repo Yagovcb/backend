@@ -2,6 +2,8 @@ package br.com.bcbdigital.shopping_api.mock;
 
 import br.com.bcbdigital.backend.dtos.dto.ItemDTO;
 import br.com.bcbdigital.backend.dtos.dto.ShopDTO;
+import br.com.bcbdigital.backend.dtos.dto.ShopReportDTO;
+import br.com.bcbdigital.backend.dtos.dto.UserDTO;
 import br.com.bcbdigital.shopping_api.model.Item;
 import br.com.bcbdigital.shopping_api.model.Shop;
 import java.time.LocalDate;
@@ -24,7 +26,7 @@ public class ShopMock {
         dto.setDate(LocalDate.now());
         dto.setTotal(120.05F);
         dto.setItems(List.of(getItemDTOMock()));
-        dto.setUserIdentifier("yagovcb");
+        dto.setUserIdentifier("1");
         return dto;
     }
 
@@ -41,5 +43,15 @@ public class ShopMock {
         dto.setPrice(100F);
         dto.setProductIdentifier("Produto de teste");
         return dto;
+    }
+
+
+    public static ShopReportDTO getShopReportDTOMock(){
+        ShopReportDTO shopReportDTO = new ShopReportDTO();
+        shopReportDTO.setCount(1);
+        shopReportDTO.setMedia(100.0);
+        shopReportDTO.setTotal(100.0);
+
+        return shopReportDTO;
     }
 }

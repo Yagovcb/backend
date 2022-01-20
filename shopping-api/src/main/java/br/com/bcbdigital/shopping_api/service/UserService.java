@@ -38,7 +38,7 @@ public class UserService {
     public UserDTO getUserByCpf(String cpf, String key) {
         try {
 
-            String url = "http://localhost:8080/user/cpf/" + cpf;
+            String url = "http://user/cpfKey/cpf/" + cpf;
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
             builder.queryParam("key", key);
 

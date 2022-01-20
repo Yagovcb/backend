@@ -91,13 +91,13 @@ public class ShopService {
      *
      * @return um {@link ShopDTO} já persistido no banco
      * */
-    public ShopDTO save(ShopDTO shopDTO, String key) {
-        if (Objects.isNull(userService.getUserByCpf( shopDTO.getUserIdentifier(), key ) ) ) {
-            return null;
-        }
-        if (!validateProducts(shopDTO.getItems())) {
-            return null;
-        }
+    public ShopDTO createShop(ShopDTO shopDTO, String key) {
+//        if (Objects.isNull(userService.getUserByCpf( shopDTO.getUserIdentifier(), key ) ) ) {
+//            return null;
+//        }
+//        if (!validateProducts(shopDTO.getItems())) {
+//            return null;
+//        }
         shopDTO.setTotal(shopDTO.getItems().stream().map(ItemDTO::getPrice).reduce((float) 0, Float::sum));
 
         Shop shop = modelMapper.map(shopDTO, Shop.class);
@@ -134,7 +134,7 @@ public class ShopService {
         return modelMapper.map(reportByDate, ShopReportDTO.class);
     }
 
-    private boolean validateProducts(List<ItemDTO> items) {
+    public boolean validateProducts(List<ItemDTO> items) {
         items.forEach(itemDTO -> {
             ProductDTO productDTO = productService.getProductByIdentifier(itemDTO.getProductIdentifier());
             if (Objects.isNull(productDTO)) {
