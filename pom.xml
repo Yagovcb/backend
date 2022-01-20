@@ -8,14 +8,13 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>backend</name>
     <packaging>pom</packaging>
-    <description>Backend das aplicações da BCB Digital</description>
+    <description>Backend das aplicações da BCB Digital que concentram as APIs</description>
 
     <modules>
         <module>product-api</module>
         <module>shopping-api</module>
         <module>user-api</module>
         <module>dtos-api</module>
-        <module>gateway</module>
     </modules>
 
 
@@ -27,16 +26,23 @@
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <spring-boot.version>2.4.0.RELEASE</spring-boot.version>
+        <spring-boot.version>2.5.6</spring-boot.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
         <lombok.version>1.18.20</lombok.version>
-        <junit.version>4.12</junit.version>
-        <flyway.version>7.14.1</flyway.version>
+        <junit.version>4.13.2</junit.version>
+        <flyway.version>8.0.0</flyway.version>
         <postgresql.version>42.2.24</postgresql.version>
-        <spring.version>2.5.5</spring.version>
+        <spring.version>2.5.6</spring.version>
         <swagger.version>3.0.0</swagger.version>
         <modelmapper.version>2.4.4</modelmapper.version>
         <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
+        <h2-version>1.4.200</h2-version>
+        <spring-cloud-gateway-version>3.0.4</spring-cloud-gateway-version>
+        <spring-cloud.version>2020.0.3</spring-cloud.version>
+        <spring-cloud-starter-eureka>1.4.7.RELEASE</spring-cloud-starter-eureka>
+        <eureka-version>3.0.4</eureka-version>
+        <gson-version>2.8.8</gson-version>
+        <jackson-version>2.12.5</jackson-version>
     </properties>
 
     <build>

@@ -1,7 +1,10 @@
 package br.com.bcbdigital.shopping_api.service;
 
+import br.com.bcbdigital.backend.dtos.dto.ProductDTO;
 import br.com.bcbdigital.backend.dtos.dto.UserDTO;
 import br.com.bcbdigital.backend.dtos.exceptions.UserNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -18,6 +21,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Service
 public class UserService {
 
+    @Autowired
+    private RestTemplate client;
+
     /**
      * Método responsavel fazer a consulta para o microsserviço de {@link br.com.bcbdigital.user_api},
      * e retorna o {@link UserDTO} pesquisado
@@ -31,16 +37,16 @@ public class UserService {
      * */
     public UserDTO getUserByCpf(String cpf, String key) {
         try {
-            RestTemplate restTemplate = new RestTemplate();
 
-            String url = "http://localhost:8080/user/cpf/" + cpf;
+            String url = "http://user/cpfKey/cpf/" + cpf;
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
             builder.queryParam("key", key);
 
-            ResponseEntity<UserDTO> response = restTemplate.getForEntity(builder.toUriString(), UserDTO.class);
+            ResponseEntity<UserDTO> response = client.exchange(builder.toUriString(), HttpMethod.GET, null, UserDTO.class);
+
             return response.getBody();
         } catch (HttpClientErrorException.NotFound e) {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException("Usuario não encontrado");
         }
     }
 }

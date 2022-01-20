@@ -2,6 +2,7 @@ package br.com.bcbdigital.user_api.service;
 
 import br.com.bcbdigital.backend.dtos.dto.DetalheRespostaDTO;
 import br.com.bcbdigital.backend.dtos.dto.UserDTO;
+import br.com.bcbdigital.backend.dtos.exceptions.MethodNotAllowedException;
 import br.com.bcbdigital.backend.dtos.exceptions.UserNotFoundException;
 import br.com.bcbdigital.user_api.model.User;
 import br.com.bcbdigital.user_api.repository.UserRepository;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +34,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     @Autowired
-    private UserRepository repository;
+    private final UserRepository repository;
 
     private final ModelMapper modelMapper = new ModelMapper();
 
@@ -42,7 +44,7 @@ public class UserService {
      * @param pageable paginação informada
      * @return um {@link Page<UserDTO>} com todos os registros da entidade {@link UserDTO} criados
      * */
-    public List<UserDTO> getAll(Pageable pageable) {
+    public List<UserDTO> getAllUsers(Pageable pageable) {
         List<User> usuarios = repository.findAll(pageable).getContent();
         return usuarios.stream().map(user -> modelMapper.map(user, UserDTO.class))
                 .collect(Collectors.toList());
@@ -69,7 +71,11 @@ public class UserService {
      * */
     public UserDTO save(UserDTO userDTO) {
         userDTO.setKey(UUID.randomUUID().toString());
-        User user = repository.save(modelMapper.map(userDTO, User.class));
+        User user = null;
+        if (existsUsuario(userDTO)) {
+            user = repository.save(modelMapper.map(userDTO, User.class));
+        }
+
         return modelMapper.map(user, UserDTO.class);
     }
 
@@ -82,7 +88,7 @@ public class UserService {
      * */
     public DetalheRespostaDTO delete(long userId) {
         Optional<User> user = repository.findById(userId);
-        user.ifPresent(value -> repository.delete(value));
+        user.ifPresent(repository::delete);
         return new DetalheRespostaDTO("Usuario deletado com sucesso", 200, LocalDate.now());
     }
 
@@ -101,7 +107,7 @@ public class UserService {
         if (Objects.nonNull(user)) {
             return modelMapper.map(user, UserDTO.class);
         } else {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException("Usuario não encontrado");
         }
     }
 
@@ -120,7 +126,7 @@ public class UserService {
         if (Objects.nonNull(user)) {
             return modelMapper.map(user, UserDTO.class);
         }
-        throw new UserNotFoundException();
+        throw new UserNotFoundException("Usuario não encontrado");
     }
 
     /**
@@ -134,6 +140,21 @@ public class UserService {
         List<User> usuarios = repository.queryByNomeLike(name);
         return usuarios.stream().map(user -> modelMapper.map(user, UserDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Método responsavel por verificar um {@link User}, dado seu cpf e nome, ja está persistido no banco
+     *
+     * @param userDTO entidade {@link UserDTO} que será persistida
+     *
+     * @return um {@link UserDTO} já persistido no banco
+     * */
+    private boolean existsUsuario (UserDTO userDTO){
+        if (!repository.existsUserByCpfAndNome(userDTO.getCpf(), userDTO.getNome())){
+            return true;
+        } else {
+            throw new MethodNotAllowedException("Usuario já foi persistido na base");
+        }
     }
 }
 

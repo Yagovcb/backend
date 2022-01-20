@@ -1,35 +1,42 @@
 package br.com.bcbdigital.user_api.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import br.com.bcbdigital.backend.dtos.dto.DetalheRespostaDTO;
 import br.com.bcbdigital.backend.dtos.dto.UserDTO;
+import br.com.bcbdigital.backend.dtos.exceptions.MethodNotAllowedException;
+import br.com.bcbdigital.backend.dtos.exceptions.UserNotFoundException;
+import br.com.bcbdigital.user_api.mock.UserMock;
 import br.com.bcbdigital.user_api.model.User;
 import br.com.bcbdigital.user_api.repository.UserRepository;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ContextConfiguration(classes = {UserService.class})
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {UserService.class})
+@SpringBootTest
+@ActiveProfiles("test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@DisplayName("UserService - Classe de teste unitario")
 class UserServiceTest {
+
     @MockBean
     private UserRepository userRepository;
 
@@ -39,344 +46,149 @@ class UserServiceTest {
     private UserService userService;
 
     @Test
+    @Order(1)
+    @DisplayName("Teste de serviço que tenta recuperar todos os usuarios")
     void testGetAll() {
         when(this.userRepository.findAll((org.springframework.data.domain.Pageable) any()))
                 .thenReturn(new PageImpl<>(new ArrayList<>()));
-        assertTrue(this.userService.getAll(null).isEmpty());
+        assertTrue(this.userService.getAllUsers(null).isEmpty());
         verify(this.userRepository).findAll((org.springframework.data.domain.Pageable) any());
     }
 
     @Test
-    void testGetAll2() {
-        var userList = UserDTO.usuariosList.stream().map(user -> modelMapper.map(user, User.class))
-                .collect(Collectors.toList());
-        PageImpl<User> pageImpl = new PageImpl<>(userList);
-        when(this.userRepository.findAll((org.springframework.data.domain.Pageable) any())).thenReturn(pageImpl);
-        assertEquals(1, this.userService.getAll(null).size());
-        verify(this.userRepository).findAll((org.springframework.data.domain.Pageable) any());
-    }
-
-    @Test
-    void testGetAll3() {
-        var users = UserDTO.usuariosList.stream().map(user -> modelMapper.map(user, User.class))
-                .collect(Collectors.toList());
-        PageImpl<User> pageImpl = new PageImpl<>(users);
-        when(this.userRepository.findAll((org.springframework.data.domain.Pageable) any())).thenReturn(pageImpl);
-        assertEquals(2, this.userService.getAll(null).size());
-        verify(this.userRepository).findAll((org.springframework.data.domain.Pageable) any());
-    }
-
-    @Test
-    void testGetAll4() {
-        when(this.userRepository.findAll((org.springframework.data.domain.Pageable) any()))
-                .thenReturn(new PageImpl<>(new ArrayList<>()));
-        assertTrue(this.userService.getAll(null).isEmpty());
-        verify(this.userRepository).findAll((org.springframework.data.domain.Pageable) any());
-    }
-
-    @Test
-    void testGetAll5() {
-        var users = UserDTO.usuariosList.stream().map(user -> modelMapper.map(user, User.class))
-                .collect(Collectors.toList());
-        PageImpl<User> pageImpl = new PageImpl<>(users);
-        when(this.userRepository.findAll((org.springframework.data.domain.Pageable) any())).thenReturn(pageImpl);
-        assertEquals(1, this.userService.getAll(null).size());
-        verify(this.userRepository).findAll((org.springframework.data.domain.Pageable) any());
-    }
-
-    @Test
+    @Order(2)
+    @DisplayName("Teste de serviço que tenta recuperar um usuario pelo seu ID")
     void testFindById() {
-        User user = new User();
-        user.setEndereco("Endereco");
-        user.setEmail("jane.doe@example.org");
-        user.setKey("Key");
-        user.setNome("Nome");
-        user.setCpf("Cpf");
-        user.setId(123L);
-        user.setDataCadastro(LocalDate.ofEpochDay(1L));
-        user.setTelefone("Telefone");
+        User user = UserMock.getUsuarioCompletoMock();
+
         Optional<User> ofResult = Optional.of(user);
         when(this.userRepository.findById(any())).thenReturn(ofResult);
-        UserDTO actualFindByIdResult = this.userService.findById(123L);
-        assertEquals("Cpf", actualFindByIdResult.getCpf());
-        assertTrue(actualFindByIdResult.getUsuariosList().isEmpty());
-        assertEquals("Telefone", actualFindByIdResult.getTelefone());
-        assertEquals("Nome", actualFindByIdResult.getNome());
-        assertEquals("Key", actualFindByIdResult.getKey());
-        assertEquals("Endereco", actualFindByIdResult.getEndereco());
-        assertEquals("jane.doe@example.org", actualFindByIdResult.getEmail());
-        assertEquals("1970-01-02", actualFindByIdResult.getDataCadastro().toString());
+        UserDTO actualFindByIdResult = this.userService.findById(1L);
+
+        assertEquals(user.getCpf(), actualFindByIdResult.getCpf());
+        assertEquals(user.getTelefone(), actualFindByIdResult.getTelefone());
+        assertEquals(user.getNome(), actualFindByIdResult.getNome());
+        assertEquals(user.getKey(), actualFindByIdResult.getKey());
+        assertEquals(user.getEndereco(), actualFindByIdResult.getEndereco());
+        assertEquals(user.getEmail(), actualFindByIdResult.getEmail());
+        assertEquals(user.getDataCadastro(), actualFindByIdResult.getDataCadastro());
         verify(this.userRepository).findById(any());
     }
 
-    @Test
-    void testFindById2() {
-        User user = new User();
-        user.setEndereco("Endereco");
-        user.setEmail("jane.doe@example.org");
-        user.setKey("Key");
-        user.setNome("Nome");
-        user.setCpf("Cpf");
-        user.setId(123L);
-        user.setDataCadastro(null);
-        user.setTelefone("Telefone");
-        Optional<User> ofResult = Optional.of(user);
-        when(this.userRepository.findById(any())).thenReturn(ofResult);
-        UserDTO actualFindByIdResult = this.userService.findById(123L);
-        assertEquals("Cpf", actualFindByIdResult.getCpf());
-        assertTrue(actualFindByIdResult.getUsuariosList().isEmpty());
-        assertEquals("Telefone", actualFindByIdResult.getTelefone());
-        assertEquals("Nome", actualFindByIdResult.getNome());
-        assertEquals("Key", actualFindByIdResult.getKey());
-        assertEquals("Endereco", actualFindByIdResult.getEndereco());
-        assertEquals("jane.doe@example.org", actualFindByIdResult.getEmail());
-        assertNull(actualFindByIdResult.getDataCadastro());
-        verify(this.userRepository).findById(any());
-    }
 
     @Test
-    void testFindById3() {
-        when(this.userRepository.findById(any())).thenReturn(Optional.empty());
-        assertNull(this.userService.findById(123L));
-        verify(this.userRepository).findById(any());
-    }
-
-    @Test
+    @Order(3)
+    @DisplayName("Teste de serviço que tenta salvar um usuario")
     void testSave() {
-        User user = new User();
-        user.setEndereco("Endereco");
-        user.setEmail("jane.doe@example.org");
-        user.setKey("Key");
-        user.setNome("Nome");
-        user.setCpf("Cpf");
-        user.setId(123L);
-        user.setDataCadastro(LocalDate.ofEpochDay(1L));
-        user.setTelefone("Telefone");
+        User user = UserMock.getUsuarioCompletoMock();
+
         when(this.userRepository.save(any())).thenReturn(user);
-        UserDTO actualSaveResult = this.userService.save(new UserDTO());
-        assertEquals("Cpf", actualSaveResult.getCpf());
-        assertTrue(actualSaveResult.getUsuariosList().isEmpty());
-        assertEquals("Telefone", actualSaveResult.getTelefone());
-        assertEquals("Nome", actualSaveResult.getNome());
-        assertEquals("Key", actualSaveResult.getKey());
-        assertEquals("Endereco", actualSaveResult.getEndereco());
-        assertEquals("jane.doe@example.org", actualSaveResult.getEmail());
-        assertEquals("1970-01-02", actualSaveResult.getDataCadastro().toString());
+        UserDTO actualSaveResult = this.userService.save(modelMapper.map(user, UserDTO.class));
+
+        assertEquals(user.getCpf(), actualSaveResult.getCpf());
+        assertEquals(user.getTelefone(), actualSaveResult.getTelefone());
+        assertEquals(user.getNome(), actualSaveResult.getNome());
+        assertEquals(user.getKey(), actualSaveResult.getKey());
+        assertEquals(user.getEndereco(), actualSaveResult.getEndereco());
+        assertEquals(user.getEmail(), actualSaveResult.getEmail());
+        assertEquals(user.getDataCadastro(), actualSaveResult.getDataCadastro());
         verify(this.userRepository).save(any());
     }
 
     @Test
+    @Order(4)
+    @DisplayName("Teste de serviço que tenta salvar um usuario forçando o erro MethodNotAllowed")
+    void testSave_MethodNotAllowedException() {
+        User user = UserMock.getUsuarioCompletoMock();
+        when(this.userRepository.save(any())).thenReturn(user);
+
+        UserDTO dto = modelMapper.map(user, UserDTO.class);
+
+        when(this.userRepository.existsUserByCpfAndNome(any(), any())).thenReturn(true);
+        assertThrows(MethodNotAllowedException.class, () -> this.userService.save(dto));
+        verify(this.userRepository).existsUserByCpfAndNome(any(), any());
+
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("Teste de serviço que tenta deletar um usuario")
     void testDelete() {
-        User user = new User();
-        user.setEndereco("Endereco");
-        user.setEmail("jane.doe@example.org");
-        user.setKey("Key");
-        user.setNome("Nome");
-        user.setCpf("Cpf");
-        user.setId(123L);
-        user.setDataCadastro(LocalDate.ofEpochDay(1L));
-        user.setTelefone("Telefone");
+        User user = UserMock.getUsuarioCompletoMock();
+
         Optional<User> ofResult = Optional.of(user);
         doNothing().when(this.userRepository).delete(any());
         when(this.userRepository.findById(any())).thenReturn(ofResult);
-        DetalheRespostaDTO actualDeleteResult = this.userService.delete(123L);
+        DetalheRespostaDTO actualDeleteResult = this.userService.delete(1L);
+
         assertEquals(200, actualDeleteResult.getStatus());
         assertEquals("Usuario deletado com sucesso", actualDeleteResult.getMensagem());
         verify(this.userRepository).delete(any());
         verify(this.userRepository).findById(any());
     }
 
-    @Test
-    void testDelete2() {
-        doNothing().when(this.userRepository).delete(any());
-        when(this.userRepository.findById(any())).thenReturn(Optional.empty());
-        DetalheRespostaDTO actualDeleteResult = this.userService.delete(123L);
-        assertEquals(200, actualDeleteResult.getStatus());
-        assertEquals("Usuario deletado com sucesso", actualDeleteResult.getMensagem());
-        verify(this.userRepository).findById(any());
-    }
 
     @Test
+    @Order(6)
+    @DisplayName("Teste de serviço que tenta recuperar um usuario pelo seu CPF")
     void testFindByCpf() {
-        User user = new User();
-        user.setEndereco("Endereco");
-        user.setEmail("jane.doe@example.org");
-        user.setKey("Key");
-        user.setNome("Nome");
-        user.setCpf("Cpf");
-        user.setId(123L);
-        user.setDataCadastro(LocalDate.ofEpochDay(1L));
-        user.setTelefone("Telefone");
+        User user = UserMock.getUsuarioCompletoMock();
+
         when(this.userRepository.findByCpf(any())).thenReturn(user);
-        UserDTO actualFindByCpfResult = this.userService.findByCpf("Cpf");
-        assertEquals("Cpf", actualFindByCpfResult.getCpf());
-        assertTrue(actualFindByCpfResult.getUsuariosList().isEmpty());
-        assertEquals("Telefone", actualFindByCpfResult.getTelefone());
-        assertEquals("Nome", actualFindByCpfResult.getNome());
-        assertEquals("Key", actualFindByCpfResult.getKey());
-        assertEquals("Endereco", actualFindByCpfResult.getEndereco());
-        assertEquals("jane.doe@example.org", actualFindByCpfResult.getEmail());
-        assertEquals("1970-01-02", actualFindByCpfResult.getDataCadastro().toString());
+        UserDTO actualFindByCpfResult = this.userService.findByCpf(user.getCpf());
+
+        assertEquals(user.getCpf(), actualFindByCpfResult.getCpf());
+        assertEquals(user.getTelefone(), actualFindByCpfResult.getTelefone());
+        assertEquals(user.getNome(), actualFindByCpfResult.getNome());
+        assertEquals(user.getKey(), actualFindByCpfResult.getKey());
+        assertEquals(user.getEndereco(), actualFindByCpfResult.getEndereco());
+        assertEquals(user.getEmail(), actualFindByCpfResult.getEmail());
+        assertEquals(user.getDataCadastro(), actualFindByCpfResult.getDataCadastro());
         verify(this.userRepository).findByCpf(any());
     }
 
     @Test
-    void testFindByCpf2() {
-        User user = new User();
-        user.setEndereco("br.com.bcbdigital.user_api.model.User");
-        user.setEmail("jane.doe@example.org");
-        user.setKey("Key");
-        user.setNome("Nome");
-        user.setCpf("Cpf");
-        user.setId(123L);
-        user.setDataCadastro(LocalDate.ofEpochDay(1L));
-        user.setTelefone("Telefone");
-        when(this.userRepository.findByCpf(any())).thenReturn(user);
-        UserDTO actualFindByCpfResult = this.userService.findByCpf("Cpf");
-        assertEquals("Cpf", actualFindByCpfResult.getCpf());
-        assertTrue(actualFindByCpfResult.getUsuariosList().isEmpty());
-        assertEquals("Telefone", actualFindByCpfResult.getTelefone());
-        assertEquals("Nome", actualFindByCpfResult.getNome());
-        assertEquals("Key", actualFindByCpfResult.getKey());
-        assertEquals("br.com.bcbdigital.user_api.model.User", actualFindByCpfResult.getEndereco());
-        assertEquals("jane.doe@example.org", actualFindByCpfResult.getEmail());
-        assertEquals("1970-01-02", actualFindByCpfResult.getDataCadastro().toString());
-        verify(this.userRepository).findByCpf(any());
+    @Order(7)
+    @DisplayName("Teste de serviço que tenta recuperar um usuario pelo seu CPF forçando erro UserNotFound")
+    void testFindByCpf_UserNotFoundException() {
+        assertThrows(UserNotFoundException.class, () -> {
+            this.userService.findByCpf("213213215412041289");
+        }, "Usuario não encontrado");
     }
 
     @Test
-    void testFindByCpf3() {
-        User user = new User();
-        user.setEndereco("Endereco");
-        user.setEmail("jane.doe@example.org");
-        user.setKey("Key");
-        user.setNome("Nome");
-        user.setCpf("Cpf");
-        user.setId(123L);
-        user.setDataCadastro(null);
-        user.setTelefone("Telefone");
-        when(this.userRepository.findByCpf(any())).thenReturn(user);
-        UserDTO actualFindByCpfResult = this.userService.findByCpf("Cpf");
-        assertEquals("Cpf", actualFindByCpfResult.getCpf());
-        assertTrue(actualFindByCpfResult.getUsuariosList().isEmpty());
-        assertEquals("Telefone", actualFindByCpfResult.getTelefone());
-        assertEquals("Nome", actualFindByCpfResult.getNome());
-        assertEquals("Key", actualFindByCpfResult.getKey());
-        assertEquals("Endereco", actualFindByCpfResult.getEndereco());
-        assertEquals("jane.doe@example.org", actualFindByCpfResult.getEmail());
-        assertNull(actualFindByCpfResult.getDataCadastro());
-        verify(this.userRepository).findByCpf(any());
-    }
-
-    @Test
-    void testFindByCpf4() {
-        User user = new User();
-        user.setEndereco("br.com.bcbdigital.user_api.model.User");
-        user.setEmail("br.com.bcbdigital.user_api.model.User");
-        user.setKey("Key");
-        user.setNome("Nome");
-        user.setCpf("Cpf");
-        user.setId(123L);
-        user.setDataCadastro(LocalDate.ofEpochDay(1L));
-        user.setTelefone("Telefone");
-        when(this.userRepository.findByCpf(any())).thenReturn(user);
-        UserDTO actualFindByCpfResult = this.userService.findByCpf("Cpf");
-        assertEquals("Cpf", actualFindByCpfResult.getCpf());
-        assertTrue(actualFindByCpfResult.getUsuariosList().isEmpty());
-        assertEquals("Telefone", actualFindByCpfResult.getTelefone());
-        assertEquals("Nome", actualFindByCpfResult.getNome());
-        assertEquals("Key", actualFindByCpfResult.getKey());
-        assertEquals("br.com.bcbdigital.user_api.model.User", actualFindByCpfResult.getEndereco());
-        assertEquals("br.com.bcbdigital.user_api.model.User", actualFindByCpfResult.getEmail());
-        assertEquals("1970-01-02", actualFindByCpfResult.getDataCadastro().toString());
-        verify(this.userRepository).findByCpf(any());
-    }
-
-    @Test
+    @Order(8)
+    @DisplayName("Teste de serviço que tenta recuperar um usuario pelo seu CPF e a Key")
     void testFindByCpfAndKey() {
-        User user = new User();
-        user.setEndereco("Endereco");
-        user.setEmail("jane.doe@example.org");
-        user.setKey("Key");
-        user.setNome("Nome");
-        user.setCpf("Cpf");
-        user.setId(123L);
-        user.setDataCadastro(LocalDate.ofEpochDay(1L));
-        user.setTelefone("Telefone");
-        when(this.userRepository.findByCpfAndKey(any(), any())).thenReturn(user);
-        UserDTO actualFindByCpfAndKeyResult = this.userService.findByCpfAndKey("Cpf", "Key");
-        assertEquals("Cpf", actualFindByCpfAndKeyResult.getCpf());
-        assertTrue(actualFindByCpfAndKeyResult.getUsuariosList().isEmpty());
-        assertEquals("Telefone", actualFindByCpfAndKeyResult.getTelefone());
-        assertEquals("Nome", actualFindByCpfAndKeyResult.getNome());
-        assertEquals("Key", actualFindByCpfAndKeyResult.getKey());
-        assertEquals("Endereco", actualFindByCpfAndKeyResult.getEndereco());
-        assertEquals("jane.doe@example.org", actualFindByCpfAndKeyResult.getEmail());
-        assertEquals("1970-01-02", actualFindByCpfAndKeyResult.getDataCadastro().toString());
-        verify(this.userRepository).findByCpfAndKey( any(), any());
-    }
+        User user = UserMock.getUsuarioCompletoMock();
 
-    @Test
-    void testFindByCpfAndKey2() {
-        User user = new User();
-        user.setEndereco("Endereco");
-        user.setEmail("jane.doe@example.org");
-        user.setKey("Key");
-        user.setNome("Nome");
-        user.setCpf("Cpf");
-        user.setId(123L);
-        user.setDataCadastro(null);
-        user.setTelefone("Telefone");
         when(this.userRepository.findByCpfAndKey(any(), any())).thenReturn(user);
-        UserDTO actualFindByCpfAndKeyResult = this.userService.findByCpfAndKey("Cpf", "Key");
-        assertEquals("Cpf", actualFindByCpfAndKeyResult.getCpf());
-        assertTrue(actualFindByCpfAndKeyResult.getUsuariosList().isEmpty());
-        assertEquals("Telefone", actualFindByCpfAndKeyResult.getTelefone());
-        assertEquals("Nome", actualFindByCpfAndKeyResult.getNome());
-        assertEquals("Key", actualFindByCpfAndKeyResult.getKey());
-        assertEquals("Endereco", actualFindByCpfAndKeyResult.getEndereco());
-        assertEquals("jane.doe@example.org", actualFindByCpfAndKeyResult.getEmail());
-        assertNull(actualFindByCpfAndKeyResult.getDataCadastro());
+        UserDTO actualFindByCpfAndKeyResult = this.userService.findByCpfAndKey(user.getCpf(), user.getKey());
+
+        assertEquals(user.getCpf(), actualFindByCpfAndKeyResult.getCpf());
+        assertEquals(user.getTelefone(), actualFindByCpfAndKeyResult.getTelefone());
+        assertEquals(user.getNome(), actualFindByCpfAndKeyResult.getNome());
+        assertEquals(user.getKey(), actualFindByCpfAndKeyResult.getKey());
+        assertEquals(user.getEndereco(), actualFindByCpfAndKeyResult.getEndereco());
+        assertEquals(user.getEmail(), actualFindByCpfAndKeyResult.getEmail());
+        assertEquals(user.getDataCadastro(), actualFindByCpfAndKeyResult.getDataCadastro());
         verify(this.userRepository).findByCpfAndKey(any(), any());
     }
 
     @Test
+    @Order(9)
+    @DisplayName("Teste de serviço que tenta recuperar um usuario pelo seu CPF e a Key forçando erro UserNotFound")
+    void testFindByCpfAndKey_UserNotFoundException() {
+        assertThrows(UserNotFoundException.class, () -> {
+            this.userService.findByCpfAndKey("213213215412041289", "123125132");
+        }, "Usuario não encontrado");
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("Teste de serviço que tenta recuperar um usuario pelo seu nome")
     void testQueryByName() {
-        when(this.userRepository.queryByNomeLike(any())).thenReturn(new ArrayList<>());
-        assertTrue(this.userService.queryByName("Name").isEmpty());
-        verify(this.userRepository).queryByNomeLike(any());
-    }
-
-    @Test
-    void testQueryByName2() {
-        User user = new User();
-        user.setEndereco("Endereco");
-        user.setEmail("jane.doe@example.org");
-        user.setKey("Key");
-        user.setNome("Nome");
-        user.setCpf("Cpf");
-        user.setId(123L);
-        user.setDataCadastro(LocalDate.ofEpochDay(1L));
-        user.setTelefone("Telefone");
-
-        ArrayList<User> userList = new ArrayList<>();
-        userList.add(user);
-        when(this.userRepository.queryByNomeLike(any())).thenReturn(userList);
-        assertEquals(1, this.userService.queryByName("Name").size());
-        verify(this.userRepository).queryByNomeLike(any());
-    }
-
-    @Test
-    void testQueryByName3() {
-        User user = new User();
-        user.setEndereco("Endereco");
-        user.setEmail("jane.doe@example.org");
-        user.setKey("Key");
-        user.setNome("Nome");
-        user.setCpf("Cpf");
-        user.setId(123L);
-        user.setDataCadastro(LocalDate.ofEpochDay(1L));
-        user.setTelefone("Telefone");
+        User user = UserMock.getUsuarioCompletoMock();
 
         User user1 = new User();
         user1.setEndereco("Endereco");
@@ -396,23 +208,5 @@ class UserServiceTest {
         verify(this.userRepository).queryByNomeLike(any());
     }
 
-    @Test
-    void testQueryByName4() {
-        User user = new User();
-        user.setEndereco("Endereco");
-        user.setEmail("jane.doe@example.org");
-        user.setKey("Key");
-        user.setNome("Nome");
-        user.setCpf("Cpf");
-        user.setId(123L);
-        user.setDataCadastro(null);
-        user.setTelefone("Telefone");
-
-        ArrayList<User> userList = new ArrayList<>();
-        userList.add(user);
-        when(this.userRepository.queryByNomeLike(any())).thenReturn(userList);
-        assertEquals(1, this.userService.queryByName("Name").size());
-        verify(this.userRepository).queryByNomeLike(any());
-    }
 }
 

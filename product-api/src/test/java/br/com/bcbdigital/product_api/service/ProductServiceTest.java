@@ -14,6 +14,8 @@ import br.com.bcbdigital.backend.dtos.dto.DetalheRespostaDTO;
 import br.com.bcbdigital.backend.dtos.dto.ProductDTO;
 import br.com.bcbdigital.backend.dtos.exceptions.CategoryNotFoundException;
 import br.com.bcbdigital.backend.dtos.exceptions.ProductNotFoundException;
+import br.com.bcbdigital.product_api.mock.CategoryMock;
+import br.com.bcbdigital.product_api.mock.ProductMock;
 import br.com.bcbdigital.product_api.model.Category;
 import br.com.bcbdigital.product_api.model.Product;
 import br.com.bcbdigital.product_api.repository.CategoryRepository;
@@ -24,16 +26,26 @@ import java.util.List;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ContextConfiguration(classes = {ProductService.class})
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {ProductService.class})
+@SpringBootTest
+@ActiveProfiles("test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@DisplayName("ProductService - Classe de teste unitario")
 class ProductServiceTest {
+
     @MockBean
     private CategoryRepository categoryRepository;
 
@@ -43,371 +55,126 @@ class ProductServiceTest {
     @Autowired
     private ProductService productService;
 
+    private final ModelMapper modelMapper = new ModelMapper();
+
     @Test
+    @Order(1)
+    @DisplayName("Teste de serviço que tenta recuperar todos os produtos")
     void testGetAll() {
-        when(this.productRepository.findAll()).thenReturn(new ArrayList<Product>());
-        assertTrue(this.productService.getAll().isEmpty());
-        verify(this.productRepository).findAll();
+        when(this.productRepository.findAll((org.springframework.data.domain.Pageable) any()))
+                .thenReturn(new PageImpl<>(new ArrayList<>()));
+        assertTrue(this.productService.getListProducts(null).isEmpty());
+        verify(this.productRepository).findAll((org.springframework.data.domain.Pageable) any());
     }
 
     @Test
-    void testGetAll2() {
-        Category category = new Category();
-        category.setNome("Nome");
-        category.setId(123L);
-
-        Product product = new Product();
-        product.setNome("Nome");
-        product.setPreco(10.0f);
-        product.setCategory(category);
-        product.setId(123L);
-        product.setProductIdentifier("42");
-        product.setDescricao("Descricao");
-
-        ArrayList<Product> productList = new ArrayList<Product>();
-        productList.add(product);
-        when(this.productRepository.findAll()).thenReturn(productList);
-        List<ProductDTO> actualAll = this.productService.getAll();
-        assertEquals(1, actualAll.size());
-        ProductDTO getResult = actualAll.get(0);
-        assertEquals("ProductDTO(productIdentifier=42, nome=Nome, preco=10.0, category=CategoryDTO(id=123, nome=Nome))",
-                getResult.toString());
-        assertEquals("Nome", getResult.getNome());
-        assertEquals("42", getResult.getProductIdentifier());
-        assertEquals(10.0f, getResult.getPreco().floatValue());
-        CategoryDTO category1 = getResult.getCategory();
-        assertEquals(123L, category1.getId().longValue());
-        assertEquals("Nome", category1.getNome());
-        verify(this.productRepository).findAll();
-    }
-
-    @Test
-    void testGetAll3() {
-        Category category = new Category();
-        category.setNome("Nome");
-        category.setId(123L);
-
-        Product product = new Product();
-        product.setNome("Nome");
-        product.setPreco(10.0f);
-        product.setCategory(category);
-        product.setId(123L);
-        product.setProductIdentifier("42");
-        product.setDescricao("Descricao");
-
-        Category category1 = new Category();
-        category1.setNome("Nome");
-        category1.setId(123L);
-
-        Product product1 = new Product();
-        product1.setNome("Nome");
-        product1.setPreco(10.0f);
-        product1.setCategory(category1);
-        product1.setId(123L);
-        product1.setProductIdentifier("42");
-        product1.setDescricao("Descricao");
-
-        ArrayList<Product> productList = new ArrayList<Product>();
-        productList.add(product1);
-        productList.add(product);
-        when(this.productRepository.findAll()).thenReturn(productList);
-        List<ProductDTO> actualAll = this.productService.getAll();
-        assertEquals(2, actualAll.size());
-        ProductDTO getResult = actualAll.get(1);
-        assertEquals("ProductDTO(productIdentifier=42, nome=Nome, preco=10.0, category=CategoryDTO(id=123, nome=Nome))",
-                getResult.toString());
-        assertEquals("42", getResult.getProductIdentifier());
-        assertEquals(10.0f, getResult.getPreco().floatValue());
-        assertEquals("Nome", getResult.getNome());
-        ProductDTO getResult1 = actualAll.get(0);
-        assertEquals("42", getResult1.getProductIdentifier());
-        CategoryDTO category2 = getResult.getCategory();
-        CategoryDTO category3 = getResult1.getCategory();
-        assertEquals(category2, category3);
-        assertEquals(10.0f, getResult1.getPreco().floatValue());
-        assertEquals("Nome", getResult1.getNome());
-        assertEquals("Nome", category3.getNome());
-        assertEquals(123L, category3.getId().longValue());
-        assertEquals(123L, category2.getId().longValue());
-        assertEquals("Nome", category2.getNome());
-        verify(this.productRepository).findAll();
-    }
-
-    @Test
+    @Order(2)
+    @DisplayName("Teste de serviço que tenta recuperar uma lista de produtos dada o ID da categoria")
     void testGetProductByCategoryId() {
-        when(this.productRepository.getProductByCategory(anyLong())).thenReturn(new ArrayList<Product>());
-        List<ProductDTO> actualProductByCategoryId = this.productService.getProductByCategoryId(123L);
+        Product product = ProductMock.getProductMock();
+
+        when(this.productRepository.getProductByCategory(anyLong())).thenReturn(new ArrayList<>());
+        List<ProductDTO> actualProductByCategoryId = this.productService.getProductByCategoryId(product.getCategory().getId());
         assertTrue(actualProductByCategoryId.isEmpty());
         verify(this.productRepository).getProductByCategory(anyLong());
-        assertEquals(actualProductByCategoryId, this.productService.getAll());
     }
 
     @Test
-    void testGetProductByCategoryId2() {
-        Category category = new Category();
-        category.setNome("Nome");
-        category.setId(123L);
-
-        Product product = new Product();
-        product.setNome("Nome");
-        product.setPreco(10.0f);
-        product.setCategory(category);
-        product.setId(123L);
-        product.setProductIdentifier("42");
-        product.setDescricao("Descricao");
-
-        ArrayList<Product> productList = new ArrayList<Product>();
-        productList.add(product);
-        when(this.productRepository.getProductByCategory(anyLong())).thenReturn(productList);
-        List<ProductDTO> actualProductByCategoryId = this.productService.getProductByCategoryId(123L);
-        assertEquals(1, actualProductByCategoryId.size());
-        ProductDTO getResult = actualProductByCategoryId.get(0);
-        assertEquals("ProductDTO(productIdentifier=42, nome=Nome, preco=10.0, category=CategoryDTO(id=123, nome=Nome))",
-                getResult.toString());
-        assertEquals("Nome", getResult.getNome());
-        assertEquals("42", getResult.getProductIdentifier());
-        assertEquals(10.0f, getResult.getPreco().floatValue());
-        CategoryDTO category1 = getResult.getCategory();
-        assertEquals(123L, category1.getId().longValue());
-        assertEquals("Nome", category1.getNome());
-        verify(this.productRepository).getProductByCategory(anyLong());
-        assertTrue(this.productService.getAll().isEmpty());
-    }
-
-    @Test
-    void testGetProductByCategoryId3() {
-        Category category = new Category();
-        category.setNome("Nome");
-        category.setId(123L);
-
-        Product product = new Product();
-        product.setNome("Nome");
-        product.setPreco(10.0f);
-        product.setCategory(category);
-        product.setId(123L);
-        product.setProductIdentifier("42");
-        product.setDescricao("Descricao");
-
-        Category category1 = new Category();
-        category1.setNome("Nome");
-        category1.setId(123L);
-
-        Product product1 = new Product();
-        product1.setNome("Nome");
-        product1.setPreco(10.0f);
-        product1.setCategory(category1);
-        product1.setId(123L);
-        product1.setProductIdentifier("42");
-        product1.setDescricao("Descricao");
-
-        ArrayList<Product> productList = new ArrayList<Product>();
-        productList.add(product1);
-        productList.add(product);
-        when(this.productRepository.getProductByCategory(anyLong())).thenReturn(productList);
-        List<ProductDTO> actualProductByCategoryId = this.productService.getProductByCategoryId(123L);
-        assertEquals(2, actualProductByCategoryId.size());
-        ProductDTO getResult = actualProductByCategoryId.get(1);
-        assertEquals("ProductDTO(productIdentifier=42, nome=Nome, preco=10.0, category=CategoryDTO(id=123, nome=Nome))",
-                getResult.toString());
-        assertEquals("42", getResult.getProductIdentifier());
-        assertEquals(10.0f, getResult.getPreco().floatValue());
-        assertEquals("Nome", getResult.getNome());
-        ProductDTO getResult1 = actualProductByCategoryId.get(0);
-        assertEquals("42", getResult1.getProductIdentifier());
-        CategoryDTO category2 = getResult.getCategory();
-        CategoryDTO category3 = getResult1.getCategory();
-        assertEquals(category2, category3);
-        assertEquals(10.0f, getResult1.getPreco().floatValue());
-        assertEquals("Nome", getResult1.getNome());
-        assertEquals("Nome", category3.getNome());
-        assertEquals(123L, category3.getId().longValue());
-        assertEquals(123L, category2.getId().longValue());
-        assertEquals("Nome", category2.getNome());
-        verify(this.productRepository).getProductByCategory(anyLong());
-        assertTrue(this.productService.getAll().isEmpty());
-    }
-
-    @Test
-    void testFindByProductIdentifier() {
-        Category category = new Category();
-        category.setNome("Nome");
-        category.setId(123L);
-
-        Product product = new Product();
-        product.setNome("Nome");
-        product.setPreco(10.0f);
-        product.setCategory(category);
-        product.setId(123L);
-        product.setProductIdentifier("42");
-        product.setDescricao("Descricao");
-        when(this.productRepository.findByProductIdentifier((String) any())).thenReturn(product);
-        ProductDTO actualFindByProductIdentifierResult = this.productService.findByProductIdentifier("42");
-        assertEquals("ProductDTO(productIdentifier=42, nome=Nome, preco=10.0, category=CategoryDTO(id=123, nome=Nome))",
-                actualFindByProductIdentifierResult.toString());
-        assertEquals("Nome", actualFindByProductIdentifierResult.getNome());
-        assertEquals("42", actualFindByProductIdentifierResult.getProductIdentifier());
-        assertEquals(10.0f, actualFindByProductIdentifierResult.getPreco().floatValue());
-        CategoryDTO category1 = actualFindByProductIdentifierResult.getCategory();
-        assertEquals(123L, category1.getId().longValue());
-        assertEquals("Nome", category1.getNome());
-        verify(this.productRepository).findByProductIdentifier((String) any());
-        assertTrue(this.productService.getAll().isEmpty());
-    }
-
-    @Test
-    void testFindByProductIdentifier2() {
-        Category category = new Category();
-        category.setNome("Nome");
-        category.setId(123L);
-
-        Product product = new Product();
-        product.setNome("br.com.bcbdigital.product_api.model.Product");
-        product.setPreco(10.0f);
-        product.setCategory(category);
-        product.setId(123L);
-        product.setProductIdentifier("42");
-        product.setDescricao("Descricao");
-        when(this.productRepository.findByProductIdentifier((String) any())).thenReturn(product);
-        ProductDTO actualFindByProductIdentifierResult = this.productService.findByProductIdentifier("42");
-        assertEquals("ProductDTO(productIdentifier=42, nome=br.com.bcbdigital.product_api.model.Product, preco=10.0,"
-                + " category=CategoryDTO(id=123, nome=Nome))", actualFindByProductIdentifierResult.toString());
-        assertEquals("br.com.bcbdigital.product_api.model.Product", actualFindByProductIdentifierResult.getNome());
-        assertEquals("42", actualFindByProductIdentifierResult.getProductIdentifier());
-        assertEquals(10.0f, actualFindByProductIdentifierResult.getPreco().floatValue());
-        CategoryDTO category1 = actualFindByProductIdentifierResult.getCategory();
-        assertEquals(123L, category1.getId().longValue());
-        assertEquals("Nome", category1.getNome());
-        verify(this.productRepository).findByProductIdentifier((String) any());
-        assertTrue(this.productService.getAll().isEmpty());
-    }
-
-    @Test
-    void testFindByProductIdentifier3() {
-        Category category = new Category();
-        category.setNome("Nome");
-        category.setId(123L);
-
-        Product product = new Product();
-        product.setNome("br.com.bcbdigital.product_api.model.Product");
-        product.setPreco(10.0f);
-        product.setCategory(category);
-        product.setId(123L);
-        product.setProductIdentifier("br.com.bcbdigital.product_api.model.Product");
-        product.setDescricao("Descricao");
-        when(this.productRepository.findByProductIdentifier((String) any())).thenReturn(product);
-        ProductDTO actualFindByProductIdentifierResult = this.productService.findByProductIdentifier("42");
-        assertEquals(
-                "ProductDTO(productIdentifier=br.com.bcbdigital.product_api.model.Product, nome=br.com.bcbdigital.product"
-                        + "_api.model.Product, preco=10.0, category=CategoryDTO(id=123, nome=Nome))",
-                actualFindByProductIdentifierResult.toString());
-        assertEquals("br.com.bcbdigital.product_api.model.Product", actualFindByProductIdentifierResult.getNome());
-        assertEquals("br.com.bcbdigital.product_api.model.Product",
-                actualFindByProductIdentifierResult.getProductIdentifier());
-        assertEquals(10.0f, actualFindByProductIdentifierResult.getPreco().floatValue());
-        CategoryDTO category1 = actualFindByProductIdentifierResult.getCategory();
-        assertEquals(123L, category1.getId().longValue());
-        assertEquals("Nome", category1.getNome());
-        verify(this.productRepository).findByProductIdentifier((String) any());
-        assertTrue(this.productService.getAll().isEmpty());
-    }
-
-    @Test
+    @Order(3)
+    @DisplayName("Teste de serviço que tenta salvar um Produto")
     void testSave() {
-        Category category = new Category();
-        category.setNome("Nome");
-        category.setId(123L);
+        Product product = ProductMock.getProductMock();
 
-        Product product = new Product();
-        product.setNome("Nome");
-        product.setPreco(10.0f);
-        product.setCategory(category);
-        product.setId(123L);
-        product.setProductIdentifier("42");
-        product.setDescricao("Descricao");
-        when(this.productRepository.save((Product) any())).thenReturn(product);
-        when(this.categoryRepository.existsById((Long) any())).thenReturn(true);
+        when(this.productRepository.save(any())).thenReturn(product);
+        when(this.categoryRepository.existsById(any())).thenReturn(true);
 
-        CategoryDTO categoryDTO = new CategoryDTO();
-        categoryDTO.setNome("Nome");
-        categoryDTO.setId(123L);
+        CategoryDTO categoryDTO = CategoryMock.getCategoryDTOMock();
+        ProductDTO productDTO = ProductMock.getProductDTOMock();
 
-        ProductDTO productDTO = new ProductDTO();
-        productDTO.setCategory(categoryDTO);
-        productDTO.setNome("Nome");
-        productDTO.setPreco(10.0f);
-        productDTO.setProductIdentifier("42");
         ProductDTO actualSaveResult = this.productService.save(productDTO);
-        CategoryDTO category1 = actualSaveResult.getCategory();
-        assertEquals(categoryDTO, category1);
-        assertEquals("Nome", actualSaveResult.getNome());
-        assertEquals("42", actualSaveResult.getProductIdentifier());
-        assertEquals(10.0f, actualSaveResult.getPreco().floatValue());
-        assertEquals(123L, category1.getId().longValue());
-        assertEquals("Nome", category1.getNome());
-        verify(this.productRepository).save((Product) any());
-        verify(this.categoryRepository).existsById((Long) any());
-        assertTrue(this.productService.getAll().isEmpty());
+        CategoryDTO ctualSaveCategory = actualSaveResult.getCategory();
+
+        assertEquals(productDTO.getNome(), actualSaveResult.getNome());
+        assertEquals(productDTO.getProductIdentifier(), actualSaveResult.getProductIdentifier());
+        assertEquals(productDTO.getPreco(), actualSaveResult.getPreco().floatValue());
+        assertEquals(categoryDTO.getNome(), ctualSaveCategory.getNome());
+
+        verify(this.productRepository).save(any());
+        verify(this.categoryRepository).existsById(any());
     }
 
     @Test
-    void testSave2() {
-        Category category = new Category();
-        category.setNome("Nome");
-        category.setId(123L);
-
-        Product product = new Product();
-        product.setNome("Nome");
-        product.setPreco(10.0f);
-        product.setCategory(category);
-        product.setId(123L);
-        product.setProductIdentifier("42");
-        product.setDescricao("Descricao");
-        when(this.productRepository.save((Product) any())).thenReturn(product);
-        when(this.categoryRepository.existsById((Long) any())).thenReturn(false);
-
-        CategoryDTO categoryDTO = new CategoryDTO();
-        categoryDTO.setNome("Nome");
-        categoryDTO.setId(123L);
-
-        ProductDTO productDTO = new ProductDTO();
-        productDTO.setCategory(categoryDTO);
-        productDTO.setNome("Nome");
-        productDTO.setPreco(10.0f);
-        productDTO.setProductIdentifier("42");
-        assertThrows(CategoryNotFoundException.class, () -> this.productService.save(productDTO));
-        verify(this.categoryRepository).existsById((Long) any());
+    @Order(4)
+    @DisplayName("Teste de serviço que tenta salvar um Produto forçando o erro CategoryNotFoundException")
+    void testSave_CategoryNotFoundException() {
+        Product product = ProductMock.getProductMock();
+        when(this.productRepository.save(any())).thenReturn(product);
+        ProductDTO dto = modelMapper.map(product, ProductDTO.class);
+        assertThrows(CategoryNotFoundException.class, () -> this.productService.save(dto));
     }
 
     @Test
+    @Order(5)
+    @DisplayName("Teste de serviço que tenta buscar um produto dado seu identificador")
+    void testFindByProductIdentifier() {
+        Category category = CategoryMock.getCategoryMock();
+        Product product = ProductMock.getProductMock();
+
+        when(this.productRepository.findByProductIdentifier(any())).thenReturn(product);
+        ProductDTO actualFindByProductIdentifierResult = this.productService.findByProductIdentifier(product.getProductIdentifier());
+
+        assertEquals(product.getNome(), actualFindByProductIdentifierResult.getNome());
+        assertEquals(product.getProductIdentifier(), actualFindByProductIdentifierResult.getProductIdentifier());
+        assertEquals(product.getPreco(), actualFindByProductIdentifierResult.getPreco().floatValue());
+
+        CategoryDTO category1 = actualFindByProductIdentifierResult.getCategory();
+        assertEquals(category.getId(), category1.getId().longValue());
+        assertEquals(category.getNome(), category1.getNome());
+
+        verify(this.productRepository).findByProductIdentifier(any());
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("Teste de serviço que tenta buscar um produto dado seu identificador forçando o erro ProductNotFoundException")
+    void testFindByProductIdentifier_ProductNotFoundException() {
+        Product product = ProductMock.getProductMock();
+        when(this.productRepository.save(any())).thenReturn(product);
+        when(this.productRepository.findByProductIdentifier(any())).thenReturn(null);
+        assertThrows(ProductNotFoundException.class, () ->
+                this.productService.findByProductIdentifier(product.getProductIdentifier())
+        );
+        verify(this.productRepository).findByProductIdentifier(any());
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Teste de serviço que tenta deletar um Produto")
     void testDelete() {
-        Category category = new Category();
-        category.setNome("Nome");
-        category.setId(123L);
+        Product product = ProductMock.getProductMock();
 
-        Product product = new Product();
-        product.setNome("Nome");
-        product.setPreco(10.0f);
-        product.setCategory(category);
-        product.setId(123L);
-        product.setProductIdentifier("42");
-        product.setDescricao("Descricao");
-        Optional<Product> ofResult = Optional.<Product>of(product);
-        doNothing().when(this.productRepository).delete((Product) any());
-        when(this.productRepository.findById((Long) any())).thenReturn(ofResult);
-        DetalheRespostaDTO actualDeleteResult = this.productService.delete(123L);
+        Optional<Product> ofResult = Optional.of(product);
+        doNothing().when(this.productRepository).delete(any());
+        when(this.productRepository.findById(any())).thenReturn(ofResult);
+        DetalheRespostaDTO actualDeleteResult = this.productService.delete(product.getId());
+
         assertEquals(200, actualDeleteResult.getStatus());
-        assertEquals("Usuario deletado com sucesso", actualDeleteResult.getMensagem());
-        verify(this.productRepository).delete((Product) any());
-        verify(this.productRepository).findById((Long) any());
-        assertTrue(this.productService.getAll().isEmpty());
+        assertEquals("Produto deletado com sucesso", actualDeleteResult.getMensagem());
+
+        verify(this.productRepository).delete(any());
+        verify(this.productRepository).findById(any());
     }
 
     @Test
-    void testDelete2() {
-        doNothing().when(this.productRepository).delete((Product) any());
-        when(this.productRepository.findById((Long) any())).thenReturn(Optional.<Product>empty());
-        assertThrows(ProductNotFoundException.class, () -> this.productService.delete(123L));
-        verify(this.productRepository).findById((Long) any());
-    }
+    @Order(8)
+    @DisplayName("Teste de serviço que tenta deletar um Produto forçando erro ProductNotFoundException")
+    void testDelete_ProductNotFoundException() {
+        Product product = ProductMock.getProductMock();
+        when(this.productRepository.save(any())).thenReturn(product);
+
+        when(this.productRepository.findById(any())).thenReturn(Optional.empty());
+        assertThrows(ProductNotFoundException.class, () -> this.productService.delete(0L));
+   }
+
 }
 

@@ -3,7 +3,6 @@ package br.com.bcbdigital.product_api.service;
 import br.com.bcbdigital.backend.dtos.dto.*;
 import br.com.bcbdigital.backend.dtos.exceptions.CategoryNotFoundException;
 import br.com.bcbdigital.backend.dtos.exceptions.ProductNotFoundException;
-import br.com.bcbdigital.product_api.controller.ProductController;
 import br.com.bcbdigital.product_api.model.Category;
 import br.com.bcbdigital.product_api.model.Product;
 import br.com.bcbdigital.product_api.repository.CategoryRepository;
@@ -12,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- *  {@link Service} controller para gerenciar as  ações do controller {@link ProductController}.
+ *  {@link Service} controller para gerenciar as  ações do controller {@link br.com.bcbdigital.product_api.controller.ProductController}.
  *
  *  Criado por Yago Castelo Branco
  *
@@ -37,15 +37,15 @@ public class ProductService {
     private CategoryRepository categoryRepository;
 
     @Autowired
-    private ProductRepository repository;
+    private ProductRepository productRepository;
 
     /**
      * Método responsavel por retornar todas as compras
      *
      * @return um {@link List<ProductDTO>} com todos os registros da entidade {@link ProductDTO} criados
      * */
-    public	List<ProductDTO> getAll() {
-        List<Product> products = repository.findAll();
+    public	List<ProductDTO> getListProducts(Pageable pageable) {
+        List<Product> products = productRepository.findAll(pageable).getContent();
         return	products.stream().map(product -> modelMapper.map(product, ProductDTO.class))
                 .collect(Collectors.toList());
     }
@@ -58,7 +58,7 @@ public class ProductService {
      * @return uma {@link List<ProductDTO>} com base na {@link CategoryDTO}
      * */
     public	List<ProductDTO> getProductByCategoryId(Long categoryId) {
-        List<Product> products = repository.getProductByCategory(categoryId);
+        List<Product> products = productRepository.getProductByCategory(categoryId);
         return	products.stream().map(product -> modelMapper.map(product, ProductDTO.class))
                 .collect(Collectors.toList());
     }
@@ -73,11 +73,11 @@ public class ProductService {
      * @return um {@link ProductDTO} especifico
      * */
     public	ProductDTO findByProductIdentifier(String productIdentifier) {
-        Product	product	= repository.findByProductIdentifier(productIdentifier);
+        Product	product	= productRepository.findByProductIdentifier(productIdentifier);
         if (Objects.nonNull(product)){
             return modelMapper.map(product, ProductDTO.class);
         } else {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException("Produto não encontrado");
         }
     }
 
@@ -92,10 +92,10 @@ public class ProductService {
         boolean existsCategory = categoryRepository.existsById(productDTO.getCategory().getId());
 
         if (!existsCategory){
-            throw new CategoryNotFoundException();
+            throw new CategoryNotFoundException("Categoria não encontrada");
         }
 
-        Product	product	= repository.save(modelMapper.map(productDTO, Product.class));
+        Product	product	= productRepository.save(modelMapper.map(productDTO, Product.class));
         return modelMapper.map(product, ProductDTO.class);
     }
 
@@ -107,13 +107,13 @@ public class ProductService {
      * @return o {@link DetalheRespostaDTO} informando que o produto foi deletado
      * */
     public DetalheRespostaDTO delete(long productId) {
-        Optional<Product> product = repository.findById(productId);
+        Optional<Product> product = productRepository.findById(productId);
 
         if (product.isPresent()) {
-            repository.delete(product.get());
-            return new DetalheRespostaDTO("Usuario deletado com sucesso", 200, LocalDate.now());
+            productRepository.delete(product.get());
+            return new DetalheRespostaDTO("Produto deletado com sucesso", 200, LocalDate.now());
         } else {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException("Produto não encontrado");
         }
     }
 }
